@@ -1,0 +1,26 @@
+
+Puppeteer - invoke external JS function from a 5th level deep child page in frameset
+
+I am trying to achieve puppeteer automation on a 20 year old e-commerce site which is built on apache Struts framework. I cannot replicate the entire struts action servlets, however I have simulated the HTML pages that get loads 14 different pages in frames once the person logs in and selects the Shop.
+The goal is to click the Create New Shopping Basket from one of the 14 pages that are loaded in the 5th deep child frame page. That link calls an external javascript function, but the puppeteer returns this error:
+```
+Error: Evaluation failed: ReferenceError: create_order is not defined
+    at __puppeteer_evaluation_script__:1:8
+    at ExecutionContext._evaluateInternal (<path>/headless-chrome/node_modules/puppeteer/lib/cjs/puppeteer/common/ExecutionContext.js:221:19)
+    at async ExecutionContext.evaluate (<path>/headless-chrome/node_modules/puppeteer/lib/cjs/puppeteer/common/ExecutionContext.js:110:16)
+    at async Promise.all (index 1)
+    at async <path>/headless-chrome/simulation/index.js:40:5
+```
+Here is the link to all html files, the external javascript file and the puppeteer js file.
+
+Extract all zip file and here is how to navigate manually
+- Open Login.html
+- Can enter any username / password and click the Login Button
+- This will show list of Shops
+- Select Shop ISA_2120_EN
+- This will open the frameset that loads 14 files
+and from here the script should click Create New Shopping Basket that call a js function - create_order() which is inside make_new_doc.js file
+
+The puppeteer index.js does execute the login and selection of the shop but error on creating the basket with above error
+
+Thanks!!

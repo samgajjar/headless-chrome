@@ -1,0 +1,177 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="de" nighteye="disabled">
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>SAP Internet Sales B2B</title>
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/stylesheet_ge.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/b2b/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/catalog/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/b2b/css/ipc.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/ipc/mimes/style/stylesheet.css">
+    <script type="text/javascript">
+        var urlRewAppPath = "";   // stores application path
+        var urlRewSessionId = ""; // store session id
+        function determineRewriteParameters() {
+            var rewrite = "/b2b_merchants/";
+            if (rewrite.length > 0) {
+                var colpos = rewrite.indexOf(";");
+                if (colpos > -1) {
+                    urlRewAppPath = rewrite.substring(0, colpos);
+                    urlRewSessionId = rewrite.substring(colpos, rewrite.length);
+                }
+                else {
+                    urlRewAppPath = rewrite;
+                }
+            }
+            return true;
+        }
+        function rewriteURL(srcUrl) {
+            var rewUrl;
+            var paramStart = srcUrl.indexOf("?");
+            // are there already any request parameters, so we have to insert the urlRewSessionId before them
+            if (paramStart == -1) {
+                rewUrl = srcUrl + urlRewSessionId;
+            }
+            else {
+                rewUrl = srcUrl.substring(0, paramStart) + urlRewSessionId + srcUrl.substring(paramStart, srcUrl.length);
+            }
+            if (urlRewAppPath.length > 0) {
+                if (rewUrl.charAt(0) == "/") {
+                    rewUrl = urlRewAppPath.substring(0, urlRewAppPath.length - 1) + rewUrl;
+                }
+                else {
+                    rewUrl = urlRewAppPath + rewUrl;
+                }
+            }
+            return rewUrl;
+        }
+        determineRewriteParameters();
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/reload.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/frames.js" type="text/javascript">
+    </script>
+    <script src="make_new_doc.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/mimes/jscript/EComBase.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/browsersniff.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/orderToolsRetkey.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+        var searchScreenORDERTMP = 'SearchCriteria_B2B_Ordertemplates';
+        var searchScreenQUOTATION = 'SearchCriteria_B2B_Sales';
+        var resultListORDERTEMP = 'ordertmp_resultlist_B2B_DB_pre';
+        var resultListQUOTATION = 'quot_resultlist_B2B_pre';
+        function openWin(addURL) {
+            var url = addURL;
+            var sat = window.open(url, 'OCICatalog', 'width=700,height=500,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function launchCustomerSupport() {
+            var customerSupport = window.open('/b2b_merchants/ecall/customer/directHelp.do', 'OCICatalog', 'width=700,height=500,scrollbars=yes,resizable=yes');
+            customerSupport.focus();
+        }
+        //-->
+    </script>
+    <script type="text/javascript">
+            function getHelpValuesPopupCustomer(formName, index) {
+                var param = "";
+                var params = "";
+                var formObject = document.forms[formName];
+                var suffix = "";
+                if (index != "") {
+                    suffix = "[" + index + "]";
+                }
+                param = eval("formObject.elements['soldToId" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&customerNumber" + suffix + "=" + param.value;
+                }
+                params = params + "&mapping[customerNumber] =soldToId"
+                param = eval("formObject.elements['rc_cust_city" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_city" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_singlefield1" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_singlefield1" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_pcode" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_pcode" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['crc_cust_singlefield2" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&crc_cust_singlefield2" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_lastname" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_lastname" + suffix + "=" + param.value;
+                }
+                url = "/b2b_merchants/base/helpvalues.do?helpValuesSearch=Customer"
+                    + "&formname=" + formName + params + "&parameterIndex=" + index;
+                var sat = window.open(url, 'sat_details', 'width=600,height=400,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+                return false;
+            }
+        //-->
+    </script>
+</head>
+<body class="nodoc" marginwidth="0" marginheight="0">
+    <div>
+        <img src="/b2b_merchants/mimes/images/busy.gif" alt="" style="display: none;">
+    </div>
+    <div id="busy" style="display:none;">
+        <p><img src="/b2b_merchants/mimes/images/busy.gif" alt="Please wait while data is being loaded"></p>
+        <p>Please wait while data is being loaded</p>
+    </div>
+    <div id="page">
+        <div class="module-name"></div>
+        <div id="nodoc-first">
+            <div id="nodoc-header">
+                <div><span></span></div>
+            </div>
+            <div id="nodoc-content">
+                <div id="nodoc-welcome">
+                    <h1><span>Welcome</span></h1>
+                    <p class="p1"><span>Welcome to ArivaNow online</span></p>
+                    <p class="p2"><span>Need to place an order? Use the links below to begin.</span></p>
+                    <p class="p3"><span>Need to find a past order, invoice or manage a shopping list? To do so, use "My
+                            Transactions" on the left or "History" on the right.</span></p>
+                </div>
+                <div id="nodoc-catalog">
+                    <h1><span>Product Catalogue</span></h1>
+                    <ul>
+                        <li>Browse in the&nbsp;
+                            <a href="#" onclick="load_catalog(); return false;">Product Catalogue</a>
+                            <!---->
+                        </li>
+                    </ul>
+                </div>
+                <div id="nodoc-transactions">
+                    <form name="welcomeForm" action="" method="get">
+                        <h1><span>New Transaction</span></h1>
+                        <ul>
+                            <li>Create new
+                                <a href="#" onclick="create_order('','orderDealer',1); return false;">Shopping
+                                    Basket</a>
+                                <!-- -->
+                            </li>
+                            <li>
+                                Create new
+                                <a href="#" onclick="create_orderwtemp('', '', 'orderwTempDealer'); return false;">order
+                                    on the basis of a shopping list</a>
+                                <!-- -->
+                            </li>
+                            <li>
+                                Create new
+                                <a href="#" onclick="create_order('','orderwTempDealer',0); return false;">Shopping
+                                    List</a>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="de" nighteye="disabled">
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>SAP Internet Sales B2B - Header</title>
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/stylesheet_ge.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/b2b/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/catalog/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/b2b/css/ipc.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/ipc/mimes/style/stylesheet.css">
+    <script type="text/javascript">
+        var urlRewAppPath = "";   // stores application path
+        var urlRewSessionId = ""; // store session id
+        function determineRewriteParameters() {
+            var rewrite = "/b2b_merchants/";
+            if (rewrite.length > 0) {
+                var colpos = rewrite.indexOf(";");
+                if (colpos > -1) {
+                    urlRewAppPath = rewrite.substring(0, colpos);
+                    urlRewSessionId = rewrite.substring(colpos, rewrite.length);
+                }
+                else {
+                    urlRewAppPath = rewrite;
+                }
+            }
+            return true;
+        }
+        function rewriteURL(srcUrl) {
+            var rewUrl;
+            var paramStart = srcUrl.indexOf("?");
+            // are there already any request parameters, so we have to insert the urlRewSessionId before them
+            if (paramStart == -1) {
+                rewUrl = srcUrl + urlRewSessionId;
+            }
+            else {
+                rewUrl = srcUrl.substring(0, paramStart) + urlRewSessionId + srcUrl.substring(paramStart, srcUrl.length);
+            }
+            if (urlRewAppPath.length > 0) {
+                if (rewUrl.charAt(0) == "/") {
+                    rewUrl = urlRewAppPath.substring(0, urlRewAppPath.length - 1) + rewUrl;
+                }
+                else {
+                    rewUrl = urlRewAppPath + rewUrl;
+                }
+            }
+            return rewUrl;
+        }
+        determineRewriteParameters();
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/frames.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/mimes/jscript/EComBase.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+            function busy(frameObject) {
+                with (frameObject.document) {
+                    //    with(parent.work_history.form_input.document){
+                    writeln("<html><head></head>");
+                    writeln("<body>");
+                    writeln("<center>");
+                    writeln("<img src='/b2b_merchants/b2b/mimes/images/busy.gif'>");
+                    writeln('<p>Data being loaded');
+                    writeln("</body></html>");
+                }
+                frameObject.document.close();
+            }
+        var isDocumentView = true;
+        var win_user_settings;
+        function userSettings() {
+            win_user_settings = window.open('/b2b_merchants/b2b/fs_user_settings.jsp', 'User_Settings', 'width=550,height=450,scrollbars=yes,resizable=yes');
+            win_user_settings.focus();
+        }
+        // Start of Change: Ebase Solution - SEP 15 2008
+        // Added to call Password Change Window
+        function pwdChange() {
+            win_user_settings = window.open('/b2b_merchants/b2b/showpwchange.do', 'User_Settings', 'width=550,height=450,scrollbars=yes,resizable=yes');
+            win_user_settings.focus();
+        }
+        // End of Change: Ebase Solution - SEP 15 2008
+        function help() {
+            // Start of Change: Ebase Solution - SEP 15 2008 
+            // Change: Added a condition to check the value of the DOC_PC_CRM_IMAGE attribute.
+            //win_help = window.open('/b2b_merchants/ecall/jsp/customer/common/frameset_help.jsp', 'Hilfe', 'width=700,height=550,scrollbars=yes,resizable=yes');
+            //win_help.focus();
+            win_help = window.open('/b2b_merchants/b2b/domtarhelp/help.jsp', 'Hilfe', 'width=700,height=550,scrollbars=yes,resizable=yes');
+            win_help.focus();
+            // End of Change: Ebase Solution - SEP 15 2008
+        }
+        function lwc() {
+            win_lwc = window.open('/b2b_merchants/ecall/jsp/customer/common/frameset_help.jsp?pageType=support', 'lwc', 'width=700,height=550,scrollbars=yes,resizable=yes');
+            win_lwc.focus();
+        }
+        function openStoreLoc() {
+            win_storeloc = window.open('/b2b_merchants/dealerlocator/searchdealer.do?popupWin=true', 'storeLocator', 'width=700,height=600,scrollbars=yes,resizable=yes');
+            win_storeloc.focus();
+        }
+        function show_catalog_view() {
+            isDocumentView = false;
+            isaTop().parent.location.href = "/b2b_merchants/b2b/catalogstart.do";
+        }
+        function show_document_view() {
+            isDocumentView = true;
+            isaTop().parent.location.href = "/b2b_merchants/b2b/catalogend.do";
+        }
+        function logoff() {
+            if (win_user_settings != null && win_user_settings.closed == false) {
+                win_user_settings.close();
+            }
+            ret = true;
+            if (parent.work_history.documents.editableDoc == true) {
+                ret = confirm('Unsaved data will be lost. Do you really want to log off?');
+            }
+            if (ret) {
+                busy(form_input());
+                isaTop().location.href = "/b2b_merchants/b2b/logoff.do";
+            }
+        }
+        function switchAccessibility() {
+            if (win_user_settings != null && win_user_settings.closed == false) {
+                win_user_settings.close();
+            }
+            ret = true;
+            if (parent.work_history.documents.editableDoc == true) {
+                ret = confirm('Unsaved data will be lost. Do you really want to log off?');
+            }
+            if (ret) {
+                if (isaTop().parent != null) {
+                    isaTop().parent.location.href = "/b2b_merchants/base/switchaccessibility.do?sap-accessibility=X";
+                }
+            }
+        }
+        function show_basket() {
+            isDocumentView = true;
+            // highlight_document_link();
+            busy(form_input());
+            isaTop().parent.location.href = "/b2b_merchants/b2b/catalogend.do";
+            //parent.organizer_nav.location.href="/b2b_merchants/b2b/organizer-nav-doc-search.jsp";
+            //parent.organizer_content.location.href= "/b2b_merchants/b2b/updateorganizercont.do";                                 
+            form_input().location.href = "/b2b_merchants/b2b/editabledocumentontop.do";
+        }
+        function show_collective_order() {
+            busy(form_input());
+            form_input().location.href = "/b2b_merchants/b2b/createcollectiveorder.do";
+        }
+        function change() {
+            document.all.test.innerText = "neu";
+        }
+        function openWinOCI(addURL) {
+            var url = addURL;
+            var sat = window.open(url, 'OCICatalog', 'width=700,height=500,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function setBasketLinkText(text) {
+            if (getElement("basketlinktext")) {
+                getElement("basketlinktext").firstChild.nodeValue = text;
+            }
+            if (getElement("basketForm")) {
+                getElement("basketForm").miniBasket.value = text;
+            }
+            if (getElement("basketpic")) {
+                getElement("basketpic").alt = text;
+            }
+        }
+    </script>
+</head>
+<body class="header-body" onload="isaTop().headerPageloaded = true;" marginwidth="0" marginheight="0">
+    <div id="header-appl">
+        <!--
+        Start of Change: Ebase Solution - SEP 15 2008
+        Change to Hide SAP Logo and put Domtar Logo
+        <div class="header-logo"></div>-->
+        <img src="/b2b_merchants/b2b/mimes/images/logo_solo.gif" alt="" border="0">
+        <p>
+            <!--<div class="header-applname">
+                        B2B <em>Shop International</em>
+                    </div>-->
+            <!--<div class="header-username">
+                            &nbsp;Yuhasz
+                    </div>-->
+            <!-- End of Change: Ebase Solution - SEP 15 2008 -->
+            <a id="access-header" href="#access-items"
+                title="Header of the Document. Activate the link to get to the entries" accesskey="a"></a>
+        </p>
+        <div id="header-nav-view">
+            <ul>
+                <li class="first"><a href="#" onclick="show_document_view()" title="Link My Transactions ">
+                        <span class="active">My Transactions</span></a></li>
+                <li><a href="#" onclick="show_catalog_view()" title="Link Catalogue ">
+                        <span class="active">Catalogue</span></a></li>
+            </ul>
+        </div>
+        <div id="header-nav-basket">
+            <ul>
+                <li class="first">
+                    <a href="#" class="button" onclick="show_basket()" title="Link Transaction in Process ">
+                        <font color="white"><span id="basketlinktext">Transaction in Process</span></font>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="header-nav-functions">
+            <ul>    
+                <li class="first">First Last
+                </li>
+                <li><a href="#" onclick="pwdChange();">
+                        <span>Change Password</span></a></li>
+                <li><a href="#" onclick="help();" title="Link Help ">
+                        <span>Help</span></a></li>
+                <!--
+                                    
+                                    <li><a href="#" onclick="switchAccessibility();" title="Screen Reader Support: Turn it on">
+                                            
+                                            <span>SRS</span></a></li>
+                                            
+    -->
+                <li><a href="#" onclick="logoff();" title="Link Log off ">
+                        <span>Log off</span></a></li>
+            </ul>
+        </div>
+        <div id="header-extradiv1">
+            <span></span>
+        </div>
+        <div id="header-extradiv2">
+            <span></span>
+        </div>
+        <div id="header-extradiv3">
+            <span></span>
+        </div>
+        <div id="header-extradiv4">
+            <span></span>
+        </div>
+        <div id="header-extradiv5">
+            <span></span>
+        </div>
+        <div id="header-extradiv6">
+            <span></span>
+        </div>
+    </div>
+    <div>
+        <img src="/b2b_merchants/b2b/mimes/images/busy.gif" alt="" style="display: none;">
+    </div>
+    <form id="basketForm" action="javascript:show_basket();">
+        <div>
+            <input name="miniBasket" type="hidden" value="Transaction in Process">
+        </div>
+    </form>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="de" nighteye="disabled">
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>SAP Internet Sales B2B</title>
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/stylesheet_ge.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/b2b/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/catalog/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/b2b/css/ipc.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/ipc/mimes/style/stylesheet.css">
+    <script type="text/javascript">
+        var urlRewAppPath = "";   // stores application path
+        var urlRewSessionId = ""; // store session id
+        function determineRewriteParameters() {
+            var rewrite = "/b2b_merchants/";
+            if (rewrite.length > 0) {
+                var colpos = rewrite.indexOf(";");
+                if (colpos > -1) {
+                    urlRewAppPath = rewrite.substring(0, colpos);
+                    urlRewSessionId = rewrite.substring(colpos, rewrite.length);
+                }
+                else {
+                    urlRewAppPath = rewrite;
+                }
+            }
+            return true;
+        }
+        function rewriteURL(srcUrl) {
+            var rewUrl;
+            var paramStart = srcUrl.indexOf("?");
+            // are there already any request parameters, so we have to insert the urlRewSessionId before them
+            if (paramStart == -1) {
+                rewUrl = srcUrl + urlRewSessionId;
+            }
+            else {
+                rewUrl = srcUrl.substring(0, paramStart) + urlRewSessionId + srcUrl.substring(paramStart, srcUrl.length);
+            }
+            if (urlRewAppPath.length > 0) {
+                if (rewUrl.charAt(0) == "/") {
+                    rewUrl = urlRewAppPath.substring(0, urlRewAppPath.length - 1) + rewUrl;
+                }
+                else {
+                    rewUrl = urlRewAppPath + rewUrl;
+                }
+            }
+            return rewUrl;
+        }
+        determineRewriteParameters();
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/frames.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+            function switch_to_documentView() {
+                isaTop().header.busy(parent.form_input);
+                if (!isaTop().header.isDocumentView) {
+                    isaTop().parent.location.href = "/b2b_merchants/b2b/catalogend.do";
+                    //isaTop().header.highlight_document_link();
+                    //organizer_nav().location.href = '/b2b_merchants/b2b/updateorganizernav.do';
+                    //organizer_content().location.href = '/b2b_merchants/b2b/updateorganizercont.do';
+                }
+            }
+//-->
+    </script>
+</head>
+<body class="history" marginwidth="0" marginheight="0">
+    <h1><span title="List of the transactions last called">History</span></h1>
+    <div class="history-items">
+        <ul>
+        </ul>
+    </div>
+</body>
+</html>

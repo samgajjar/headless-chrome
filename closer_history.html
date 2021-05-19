@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="de" nighteye="disabled">
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/stylesheet_ge.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/b2b/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/catalog/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/b2b/css/ipc.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/ipc/mimes/style/stylesheet.css">
+    <script type="text/javascript">
+        var urlRewAppPath = "";   // stores application path
+        var urlRewSessionId = ""; // store session id
+        function determineRewriteParameters() {
+            var rewrite = "/b2b_merchants/";
+            if (rewrite.length > 0) {
+                var colpos = rewrite.indexOf(";");
+                if (colpos > -1) {
+                    urlRewAppPath = rewrite.substring(0, colpos);
+                    urlRewSessionId = rewrite.substring(colpos, rewrite.length);
+                }
+                else {
+                    urlRewAppPath = rewrite;
+                }
+            }
+            return true;
+        }
+        function rewriteURL(srcUrl) {
+            var rewUrl;
+            var paramStart = srcUrl.indexOf("?");
+            // are there already any request parameters, so we have to insert the urlRewSessionId before them
+            if (paramStart == -1) {
+                rewUrl = srcUrl + urlRewSessionId;
+            }
+            else {
+                rewUrl = srcUrl.substring(0, paramStart) + urlRewSessionId + srcUrl.substring(paramStart, srcUrl.length);
+            }
+            if (urlRewAppPath.length > 0) {
+                if (rewUrl.charAt(0) == "/") {
+                    rewUrl = urlRewAppPath.substring(0, urlRewAppPath.length - 1) + rewUrl;
+                }
+                else {
+                    rewUrl = urlRewAppPath + rewUrl;
+                }
+            }
+            return rewUrl;
+        }
+        determineRewriteParameters();
+    </script>
+    <script type="text/javascript">
+        var img0 = "/b2b_merchants/b2b/mimes/images/left_arrow.gif";
+        var img0_h = "/b2b_merchants/b2b/mimes/images/left_arrow_h.gif";
+        var img1 = "/b2b_merchants/b2b/mimes/images/right_arrow.gif";
+        var img1_h = "/b2b_merchants/b2b/mimes/images/right_arrow_h.gif";
+    //-->
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/closer.js" type="text/javascript" language="JavaScript"></script>
+</head>
+<body style="background:url(../b2b/mimes/images/banner-bg.gif) no-repeat right 0;"
+    onload="parent.resize('min', 'history'); chgArrow('left'); return false;" marginwidth="0" marginheight="0">
+    <a id="access-history-closer" href="#access-items"
+        title="Closer of the history. Activate the link to get to the closer" accesskey="R"></a>
+    <div id="leftArrow" style="margin: 50px 2px; display: block;">
+        <a href="#" onmouseover="overArrow('left');" onmouseout="outArrow('left');"
+            onclick="parent.resize('max', 'history'); chgArrow('right'); return false;"><img
+                src="/b2b_merchants/b2b/mimes/images/left_arrow.gif" width="7" height="13" border="0"
+                alt="Display History" name="arrow_left"></a>
+    </div>
+    <div id="rightArrow" style="margin: 50px 2px; display: none;">
+        <a href="#" onmouseover="overArrow('right');" onmouseout="outArrow('right');"
+            onclick="parent.resize('min', 'history'); chgArrow('left'); return false;"><img
+                src="/b2b_merchants/b2b/mimes/images/right_arrow.gif" width="7" height="13" border="0"
+                alt="Hide history" name="arrow_right"></a>
+    </div>
+    <p>
+        <img src="/b2b_merchants/b2b/mimes/images/spacer.gif" width="1" height="1200" alt="" border="0">
+    </p>
+</body>
+</html>

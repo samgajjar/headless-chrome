@@ -1,0 +1,60 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" nighteye="disabled">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>ArivaNow Canada Online Store</title>
+    <script type="text/javascript">
+        var headerPageloaded = false
+        var workHistoryInterval;
+
+        function resize(direction, frameObj) {
+            if (direction == "min") {
+                if (frameObj == "organizer")
+                    document.getElementById("secondFS").cols = '0,15,*';
+            }
+            else {
+                if (frameObj == "organizer")
+                    document.getElementById("secondFS").cols = '25%,15,*';
+            }
+        }
+
+        function loadPage() {
+            if (headerPageloaded == false) {
+                // wait for header page being loaded
+                return
+            }
+            clearInterval(workHistoryInterval);
+            work_history.location.href = "/b2b_merchants/b2b/fs_startworkarea.jsp";
+        }
+        workHistoryInterval = setInterval("loadPage()", 500);
+    </script>
+</head>
+<frameset rows="85,*,70" id="mainFS" border="1" frameborder="1" framespacing="0">
+    <frame name="header" src="header.html" frameborder="1" scrolling="no" marginwidth="0"
+        marginheight="0" title="Header of the Application: Provides basic navigation and functions">
+        <frameset cols="250,15,*" id="secondFS" frameborder="1" framespacing="0">
+            <frameset rows="70,*" id="thirdFS" frameborder="1" framespacing="0">
+                <frame name="organizer_nav" src="nav.html" frameborder="1"
+                    scrolling="no" marginwidth="0" marginheight="0"
+                    title="Locator: Tabstrips for switching between Locator contents">
+                    <!-- Change by Leon 2010-03-22 Call /b2b/zproposedprdouctlist.do before load /b2b/updateorganizercont.do 
+         param "mytrans" is a flag for Z_ProductProposaListAction class and without any meaning
+        -->
+                    <!-- <frame name="organizer_content" src="/b2b_merchants/b2b/updateorganizercont.do" frameborder="0" scrolling="auto" marginwidth="0" marginheight="0" title="???en.b2b.frame.jsp.organizercontent???" /> -->
+                    <frame name="organizer_content" src="productlist.html"
+                        frameborder="1" scrolling="auto" marginwidth="0" marginheight="0"
+                        title="???en.b2b.frame.jsp.organizercontent???">
+                        <!-- End of change -->
+            </frameset>
+            <frame name="closer_organizer" src="closer_organizer.html" frameborder="1" scrolling="no"
+                marginwidth="0" marginheight="0" title="???en.b2b.frame.jsp.closerorganizer???">
+                <frame name="work_history" src="work_history.html" frameborder="1" scrolling="no"
+                    marginwidth="0" marginheight="0">
+        </frameset>
+        <frame name="footer" src="footer.html" frameborder="1" scrolling="no" marginwidth="0"
+            marginheight="0" title="footer">
+            <noframes>
+                <p>&nbsp;</p>
+            </noframes>
+</frameset>
+</html>

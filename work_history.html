@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" nighteye="disabled">
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>ArivaNow Canada Online Store</title>
+    <script type="text/javascript">
+            function resize(direction, frameObj) {
+                if (direction == "min") {
+                    if (frameObj == "history")
+                        document.getElementById("fourthFS").cols = '*,15,0';
+                }
+                else {
+                    if (frameObj == "history")
+                        document.getElementById("fourthFS").cols = '*,15,80';
+                }
+            }
+      //-->
+    </script>
+</head>
+<frameset cols="*,15,0" id="fourthFS" border="1" frameborder="1" framespacing="0">
+    <frameset rows="0,36,*" id="workFS" border="1" frameborder="1" framespacing="0">
+        <frame name="documents" src="updateworkareanav.html" frameborder="1" scrolling="no"
+            marginwidth="0" marginheight="0">
+            <frame name="banner" src="banner.html" frameborder="1" scrolling="no" marginwidth="0"
+                marginheight="0" title="banner">
+                <frameset cols="40,*" id="contentFS" border="1" frameborder="1" framespacing="0">
+                    <frame name="spacer" src="empty.html" frameborder="1" scrolling="no"
+                        marginwidth="0" marginheight="0">
+                        <frame name="form_input" src="updatedocumentview.html"
+                            frameborder="0" scrolling="auto" marginwidth="0" marginheight="0"
+                            title="Work Area: Shows documents, product information and the Welcome page">
+                </frameset>
+    </frameset>
+    <frame name="closer_history" src="closer_history.html" frameborder="1" scrolling="no"
+        marginwidth="0" marginheight="0" title="???en.b2b.frame.jsp.closerhistory???">
+        <frame name="_history" src="updatehistory.html" frameborder="1" scrolling="no"
+            marginwidth="0" marginheight="0" title="History: Shows the documents used last">
+            <noframes>
+                <p>&nbsp;</p>
+            </noframes>
+</frameset>
+</html>

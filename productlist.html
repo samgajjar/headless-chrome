@@ -1,0 +1,803 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" nighteye="disabled">
+
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+    <title>Generic Search Framework</title>
+    <!-- Change by Leon -->
+    <link type="text/css" rel="STYLESHEET" href="/b2b_merchants/mimes/shared/style/stylesheet.css">
+    <style>
+        td>img {
+            display: inline;
+        }
+    </style>
+    <!-- End of change -->
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/stylesheet_ge.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/b2b/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/catalog/stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/b2b/css/ipc.css">
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/ipc/mimes/style/stylesheet.css">
+    <script type="text/javascript">
+            
+        var urlRewAppPath = "";   // stores application path
+        var urlRewSessionId = ""; // store session id
+        function determineRewriteParameters() {
+            var rewrite = "/b2b_merchants/";
+            if (rewrite.length > 0) {
+                var colpos = rewrite.indexOf(";");
+                if (colpos > -1) {
+                    urlRewAppPath = rewrite.substring(0, colpos);
+                    urlRewSessionId = rewrite.substring(colpos, rewrite.length);
+                }
+                else {
+                    urlRewAppPath = rewrite;
+                }
+            }
+            return true;
+        }
+        function rewriteURL(srcUrl) {
+            var rewUrl;
+            var paramStart = srcUrl.indexOf("?");
+            // are there already any request parameters, so we have to insert the urlRewSessionId before them
+            if (paramStart == -1) {
+                rewUrl = srcUrl + urlRewSessionId;
+            }
+            else {
+                rewUrl = srcUrl.substring(0, paramStart) + urlRewSessionId + srcUrl.substring(paramStart, srcUrl.length);
+            }
+            if (urlRewAppPath.length > 0) {
+                if (rewUrl.charAt(0) == "/") {
+                    rewUrl = urlRewAppPath.substring(0, urlRewAppPath.length - 1) + rewUrl;
+                }
+                else {
+                    rewUrl = urlRewAppPath + rewUrl;
+                }
+            }
+            return rewUrl;
+        }
+        determineRewriteParameters();
+    //-->
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/frames.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/appbase/jscript/calendar.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/appbase/jscript/dateformatcheck.js.jsp" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+            function Entry() {
+                function addFlwElm(scnElm) {
+                    this.i_flw++;
+                    this.flwElms[this.i_flw] = scnElm;
+                }
+                function setAllVisible() {
+                    for (var i = 0; i <= this.i_flw; i++) {
+                        this.flwElms[i].isVisible = true;
+                        this.flwElms[i].check();
+                    }
+                }
+                this.addFlwElm = addFlwElm;
+                this.setAllVisible = setAllVisible;
+                this.i_flw = -1;
+                this.flwElms = new Array();
+            }
+        function ScnElm(div_id, select_id, pty_name, fixElement, isRange) {
+            function check() {
+                var obj = document.getElementById(this.s_id);
+                var idx = 0;
+                if (obj == null) return;
+                if (obj.type == "select-one") {
+                    idx = obj.selectedIndex;
+                }
+                if (obj.type == "radio") {
+                    while (obj && !obj.checked) {
+                        idx++;
+                        obj = document.getElementById((this.s_id + "+" + idx));
+                    }
+                }
+                var a_entry = this.entries[idx];
+                if (!a_entry) return;
+                a_entry.setAllVisible();
+            }
+            function addEntry(indexpos, entry) {
+                this.entries[indexpos] = entry;
+            }
+            this.check = check;
+            this.addEntry = addEntry;
+            (fixElement != null) ? this.isFixElement = fixElement : this.isFixElement = false;
+            (fixElement != null && fixElement == true) ? this.isVisible = true : this.isVisible = false;
+            (isRange != null && isRange == true) ? this.isRange = true : this.isRange = false;
+            this.d_id = div_id;
+            this.s_id = select_id;
+            this.pty_name = pty_name;
+            this.entries = new Array();
+        }
+        function evaluateX() {
+            setAllInvisible();
+            for (var i = 0; i < scnElms.length; i++) {
+                var checkelm = scnElms[i];
+                if (!checkelm) break;
+                if (checkelm.isFixElement) {
+                    checkelm.check();
+                }
+            }
+            for (var i = 0; i < scnElms.length; i++) {
+                var scnElmx = scnElms[i];
+                if (!scnElmx) break;
+                if (scnElmx.isVisible == true) {
+                    if (document.getElementById(scnElmx.d_id)) {
+                        document.getElementById(scnElmx.d_id).style.display = "block";
+                    }
+                } else {
+                    if (document.getElementById(scnElmx.d_id)) {
+                        document.getElementById(scnElmx.d_id).style.display = "none";
+                    }
+                }
+            }
+        }
+        function setAllInvisible() {
+            for (var i = 0; i < scnElms.length; i++) {
+                if (!scnElms[i]) break;
+                if (!scnElms[i].isFixElement) {
+                    scnElms[i].isVisible = false;
+                }
+            }
+        }
+        /*
+        * Use this function to determine a HTML Element by name of the property
+        * @param String  name of the property
+        @ @return Object null or object with that name
+        */
+        function getElementByPtyName(pty_name) {
+            var obj = null;
+            for (var i = 0; i < scnElms.length; i++) {
+                if (!scnElms[i]) break;
+                if (scnElms[i].pty_name == pty_name) {
+                    obj = scnElms[i];
+                }
+            }
+            if (obj != null) {
+                return document.getElementById(obj.s_id);
+            }
+        }
+        var reqGo = false;
+        function multipleInvocationHandler() {
+            if (reqGo != false) {
+                return true;
+            }
+            if (document.getElementById('gsbuttonstart') != null) {
+                document.getElementById('gsbuttonstart').title = 'Request already started';
+            }
+            reqGo = true;
+            return false;
+        }
+        function sendRequest(targetFrame) {
+            if (multipleInvocationHandler() == true) { return true; }
+            var request = "/b2b_merchants/genericsearch.do?genericsearch.name=SearchCriteria_B2B_Sales&";
+            request = request + "genericsearch.start=true&";
+            request = request + "GSdateformat=dd/mm/yyyy&";
+            request = request + "GSnumberformat=%23%2c%23%230.%23%23%23&";
+            request = request + "GSlanguage=en&";
+            request = request + "GSdocumenthandlernoadd=null&"
+            for (var i = 0; i < scnElms.length; i++) {
+                var scnElmx = scnElms[i];
+                if (!scnElmx) break;
+                if (scnElmx.isVisible == true) {
+                    if (scnElmx.isRange == false) {
+                        var objL = document.getElementById(scnElmx.s_id);
+                        if (objL && objL.type == "radio") {
+                            var ridx = 0;
+                            while (objL && !objL.checked) {
+                                ridx++;
+                                objL = document.getElementById((scnElmx.s_id + "+" + ridx));
+                            }
+                        }
+                        if (objL && objL.name != 'null') {
+                            request = request + ((objL.name) + "=" + (encodeURIComponent(objL.value)) + "&");
+                        }
+                        if (objL) {
+                            objL.disabled = true;
+                        }
+                    } else {
+                        var idLow = scnElmx.s_id + "_low";
+                        var idHigh = scnElmx.s_id + "_high";
+                        var objL = document.getElementById(idLow);
+                        var objH = document.getElementById(idHigh);
+                        if (objL.name != 'null') {
+                            request = request + ((objL.name) + "=" + (encodeURIComponent(objL.value)) + "&");
+                            objL.disabled = true;
+                        }
+                        if (objH.name != 'null') {
+                            request = request + ((objH.name) + "=" + (encodeURIComponent(objH.value)) + "&");
+                            objH.disabled = true;
+                        }
+                    }
+                }
+            }
+            //alert("Target Frame: " + targetFrame +"\r\nRequest: " + request); //return true;
+            if (targetFrame != null && targetFrame.length > 0) {
+                var targetLoc = findTargetLocation(null, targetFrame);
+                request = request + "&GSnoselectoptions=true&GSenableselectoptionsframename=" + window.name;
+                targetLoc.location.href = request;
+            } else {
+                document.location.href = request;
+            }
+            return true;
+        }
+        //Change by Leon
+        function transferItem(productId, productGuid, unit) {
+            form_input().location.href = "/b2b_merchants/b2b/quicksearchaddtobasket.do?QS_prodguid=" + productGuid;
+            //form_input().location.href="/b2b_merchants/b2b/quicksearchaddtobasket.do?QS_prodguid=" + productGuid + "&=" + unit;
+        }
+        //End of change
+    </script>
+    <script type="text/javascript">
+            function sendSortRequest(columnName, sortSequence, objType) {
+                var request = "/b2b_merchants/genericsearchsortrequest.do?genericsearch.name=SearchCriteria_B2B_Sales&";
+                request = request + "genericsearch.sort=true" + "&";
+                request = request + "genericsearch.sort.dateformat=" + "dd/mm/yyyy" + "&";
+                request = request + "genericsearch.sort.numberformat=" + "%23%2c%23%230.%23%23%23" + "&";
+                request = request + "genericsearch.sort.language=" + "en" + "&";
+                request = request + "GSdocumenthandlernoadd=" + "null" + "&";
+                request = request + "genericsearch.sort.columnname=" + columnName + "&";
+                request = request + "genericsearch.sort.sequence=" + sortSequence + "&";
+                request = request + "genericsearch.sort.objecttype=" + objType + "&";
+                request = request + "GSnoselectoptions=" + "null" + "&";
+                request = request + "GSincludestoshow=" + "null";
+                //alert("SortRequest: " + request);
+                document.location.href = request;
+            }
+        function findTargetLocation(inWin, target) {
+            var tmpWnd = (inWin != null ? inWin : window);
+            var retVal = null;
+            while (inWin == null && tmpWnd.parent != tmpWnd && retVal == null) {
+                tmpWnd = tmpWnd.parent;
+            }
+            for (var i = 0; i < tmpWnd.frames.length; i++) {
+                if (tmpWnd.frames[i].name == target) {
+                    retVal = tmpWnd.frames[i];
+                    break;
+                }
+                retVal = findTargetLocation(tmpWnd.frames[i], target);
+            }
+            if (inWin == null && retVal == null) {
+                retVal = window;
+            }
+            return retVal;
+        }
+        function accSetFocusonMsg() {
+            var msgObj = document.getElementById("GSACCRESULTMSG");
+            if (msgObj != null) {
+                msgObj.focus();
+            }
+        }
+        function enableSelectOptions(target) {
+            var frame = findTargetLocation(null, target);
+            if (frame == null) return true;
+            with (frame) {
+                for (var i = 0; i < scnElms.length; i++) {
+                    var scnElmx = scnElms[i];
+                    if (!scnElmx) break;
+                    if (scnElmx.isVisible == true) {
+                        if (scnElmx.isRange == false) {
+                            var objL = document.getElementById(scnElmx.s_id);
+                            if (objL) {
+                                objL.disabled = false;
+                            }
+                        } else {
+                            var idLow = scnElmx.s_id + "_low";
+                            var idHigh = scnElmx.s_id + "_high";
+                            var objL = document.getElementById(idLow);
+                            var objH = document.getElementById(idHigh);
+                            if (objL.name != 'null') {
+                                objL.disabled = false;
+                            }
+                            if (objH.name != 'null') {
+                                objH.disabled = false;
+                            }
+                        }
+                    }
+                }
+                var butStart = document.getElementById('gsbuttonstart');
+                if (butStart) {
+                    butStart.className = "button";
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">    
+        var gv_whole_visibility = false;
+        var scnElms = new Array();
+        var hasDependencies = true;
+        var isRange = false;
+        scnElms[0] = new ScnElm('TRID1249937846', 'ID1249937846', 'document_types', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[1] = new ScnElm('TRID1020342768', 'ID1020342768', 'DOCUMENT_STATUS(1)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[2] = new ScnElm('TRID1243980481', 'ID1243980481', 'DOCUMENT_STATUS(2)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[3] = new ScnElm('TRID1826640622', 'ID1826640622', 'DOCUMENT_STATUS(3)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[4] = new ScnElm('TRID2070200089', 'ID2070200089', 'DOCUMENT_STATUS(4)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[5] = new ScnElm('TRID322847129', 'ID322847129', 'DOCUMENT_STATUS(5)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[6] = new ScnElm('TRID1548004781', 'ID1548004781', 'DOCUMENT_TYPE(1)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[7] = new ScnElm('TRID551970862', 'ID551970862', 'DOCUMENT_TYPE(2)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[8] = new ScnElm('TRID1992406241', 'ID1992406241', 'dateattributesUI', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[9] = new ScnElm('TRID659184816', 'ID659184816', 'dateattributes', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[10] = new ScnElm('TRID51067639', 'ID51067639', 'DOCUMENT_DATE', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[11] = new ScnElm('TRID1447833520', 'ID1447833520', 'DOCUMENT_DATE', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[12] = new ScnElm('TRID600766483', 'ID600766483', 'DOCUMENT_DATE', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[13] = new ScnElm('TRID1761655234', 'ID1761655234', 'DOCUMENT_DATE', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[14] = new ScnElm('TRID782476649', 'ID782476649', 'DOCUMENT_DATE', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[15] = new ScnElm('TRID2042669162', 'ID2042669162', 'DOCUMENT_DATE(2)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = true;
+        scnElms[16] = new ScnElm('TRID1467024792', 'ID1467024792', 'DOCUMENT_DATE(3)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[17] = new ScnElm('TRID1025927937', 'ID1025927937', 'VALID_FROM', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[18] = new ScnElm('TRID624635396', 'ID624635396', 'VALID_FROM', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[19] = new ScnElm('TRID1347034036', 'ID1347034036', 'VALID_FROM', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[20] = new ScnElm('TRID828436378', 'ID828436378', 'VALID_FROM', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[21] = new ScnElm('TRID1393721545', 'ID1393721545', 'VALID_FROM', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[22] = new ScnElm('TRID1673868986', 'ID1673868986', 'VALID_FROM(2)', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = true;
+        scnElms[23] = new ScnElm('TRID680272002', 'ID680272002', 'VALID_FROM(3)', hasDependencies, isRange);
+        var hasDependencies = true;
+        var isRange = false;
+        scnElms[24] = new ScnElm('TRID128600986', 'ID128600986', 'attrib_sub_char_in', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[25] = new ScnElm('TRID1028222820', 'ID1028222820', 'PURCHASE_ORDER', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[26] = new ScnElm('TRID540028331', 'ID540028331', 'DOCUMENT_ID', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[27] = new ScnElm('TRID990266895', 'ID990266895', 'MATERIAL', hasDependencies, isRange);
+        var hasDependencies = false;
+        var isRange = false;
+        scnElms[28] = new ScnElm('TRID417440015', 'ID417440015', 'QUOTATION_TYPE', hasDependencies, isRange);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[1]);
+        new_entry.addFlwElm(scnElms[6]);
+        new_entry.addFlwElm(scnElms[8]);
+        scnElms[0].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[8]);
+        scnElms[0].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        scnElms[0].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        scnElms[0].addEntry(3, new_entry);
+        var new_entry = new Entry();
+        scnElms[1].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        scnElms[1].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        scnElms[1].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        scnElms[2].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        scnElms[2].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        scnElms[2].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        scnElms[2].addEntry(3, new_entry);
+        var new_entry = new Entry();
+        scnElms[3].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        scnElms[3].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        scnElms[3].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        scnElms[4].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        scnElms[4].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        scnElms[5].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        scnElms[5].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        scnElms[5].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        scnElms[5].addEntry(3, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[10]);
+        scnElms[8].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[15]);
+        scnElms[8].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[16]);
+        scnElms[8].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[11]);
+        scnElms[8].addEntry(3, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[12]);
+        scnElms[8].addEntry(4, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[13]);
+        scnElms[8].addEntry(5, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[14]);
+        scnElms[8].addEntry(6, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[17]);
+        scnElms[9].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[22]);
+        scnElms[9].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[23]);
+        scnElms[9].addEntry(2, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[18]);
+        scnElms[9].addEntry(3, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[19]);
+        scnElms[9].addEntry(4, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[20]);
+        scnElms[9].addEntry(5, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[21]);
+        scnElms[9].addEntry(6, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[25]);
+        scnElms[24].addEntry(0, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[26]);
+        scnElms[24].addEntry(1, new_entry);
+        var new_entry = new Entry();
+        new_entry.addFlwElm(scnElms[27]);
+        scnElms[24].addEntry(2, new_entry);
+    //-->
+    </script>
+    <script type="text/javascript" src="/b2b_merchants/mimes/jscript/EComBase.js">
+    </script>
+    <script type="text/javascript">
+            // call with the basic parameters dateFormat, dateFieldId
+            function openCalendarWindow(dateFormat, dateFieldId) {
+                dateField = getElement(dateFieldId);
+                return openCalendarWindow3(dateFormat, dateField.value, dateField);
+            }
+        // call with the basic parameters dateFormat, dateFieldId 
+        // and start the calendar month table on the weekDay
+        function openCalendarWindowOnWeekDay(dateFormat, dateFieldId, weekDay) {
+            dateField = getElement(dateFieldId);
+            return openCalendarWindow4(dateFormat, dateField.value, dateField, weekDay);
+        }
+        // call with all the parameters dateFormat, dateValue, dateField, weekDay
+        function openCalendarWindow4(dateFormat, dateValue, dateField, weekDay) {
+            var calendarWindow = window.open('/b2b_merchants/appbase/calendar.jsp' + '?dateFormat=' + dateFormat + '&dateValue=' + dateValue + '&weekDay=' + weekDay,
+                'calendarWindow', 'width=300,height=370,screenX=200,screenY=300,titlebar=yes,resizable=yes');
+            calendarWindow.dateField = dateField;
+            calendarWindow.focus();
+            return calendarWindow;
+        }
+        // call with the most common 3 parameters dateFormat, dateValue, dateField
+        function openCalendarWindow3(dateFormat, dateValue, dateField) {
+            var calendarWindow = window.open('/b2b_merchants/appbase/calendar.jsp' + '?dateFormat=' + dateFormat + '&dateValue=' + dateValue,
+                'calendarWindow', 'width=300,height=370,screenX=200,screenY=300,titlebar=yes,resizable=yes');
+            calendarWindow.dateField = dateField;
+            calendarWindow.focus();
+            return calendarWindow;
+        }
+        // call with the parameters dateFormat, dateField. The dateValue is taken from the dateField
+        function openCalendarWindow2(dateFormat, dateField) {
+            return openCalendarWindow3(dateFormat, dateField.value, dateField)
+        }
+        // call with the dateField, The dateFormat is the default SAP date, The dateValue is taken from the dateField
+        function openCalendarWindow1(dateField) {
+            var calendarWindow = window.open('/b2b_merchants/appbase/calendar.jsp' + '?dateValue=' + dateField.value,
+                'calendarWindow', 'width=300,height=370,screenX=200,screenY=300,titlebar=yes,resizable=yes');
+            calendarWindow.dateField = dateField;
+            calendarWindow.focus();
+            return calendarWindow;
+        }
+        // display the calendar control embedded not as pop-up (needs modification of the calling JSP)
+        function showCal(dateFormat, dateFieldId, calDivId, calFrameName) {
+            dateField = getElement(dateFieldId);
+            var calendarFrame = getElement(calFrameName);
+            // display the calendar div-area
+            toggleCal(calDivId);
+            // set the inputfield object at the calendarFrame
+            var calReady = false;
+            var startTime = new Date();
+            var timeDiff = 0;
+            var stopIt = false;
+            while (!calReady && !stopIt) {
+                try {
+                    calendarFrame.contentWindow.dateField = dateField;
+                    calReady = true;
+                }
+                catch (e) {
+                }
+                // If accessing calendar frame is not successful within 10 seconds we stop in order to avoid an endless loop.
+                var currentTime = new Date();
+                timeDiff = currentTime - startTime;
+                if (timeDiff > 100000) {
+                    stopIt = true;
+                }
+            }
+        }
+        // display or hide the div-area of the embedded calendar control
+        function toggleCal(divId) {
+            getElement(divId).style.display = (getElement(divId).style.display == 'block') ? 'none' : 'block';
+        }
+//-->
+    </script>
+    <!-- Get customized JScript Files -->
+    <script src="/b2b_merchants/b2b/jscript/showSoldTo.jsp" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/GSloadNewPage.jsp" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/GSsendRequestAuction.jsp" type="text/javascript">
+    </script>
+</head>
+
+<body class="document-search" onload="evaluateX();" marginwidth="0" marginheight="0">
+    <div class="module-name"></div>
+    <div id="gensearch-col-1">
+        <form name="GENERICSEARCH" id="gensearch" action="dummy">
+            <div class="filter-1">
+                <table border="0">
+                    <tbody>
+                        <tr id="TRID1249937846" style="display: block;">
+                            <td class="label"><label for="ID1249937846">Document Type</label></td>
+                            <td class="input">
+                                <select id="ID1249937846" name="rc_documenttypes"
+                                    onchange="GSloadNewPageR3(this);evaluateX();">
+                                    <option value="ORDER" selected="selected">Orders</option>
+                                    <option value="ORDERTMP">Shopping List</option>
+                                    <option value="INVOICE">Invoices</option>
+                                    <option value="CREDITMEMO">Credit Memos</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID1020342768" style="display: block;">
+                            <td class="label"><label for="ID1020342768">Status</label></td>
+                            <td class="input">
+                                <select id="ID1020342768" name="rc_status_head1" onchange="evaluateX();">
+                                    <option value="">Any</option>
+                                    <option value="open" selected="selected">Open</option>
+                                    <option value="C">Completed</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID1243980481" style="display: none;">
+                            <td class="label"><label for="ID1243980481">Status</label></td>
+                            <td class="input">
+                                <select id="ID1243980481" name="rc_status_head2" onchange="evaluateX();">
+                                    <option value="">Any</option>
+                                    <option value="r3incompl" selected="selected">Incomplete</option>
+                                    <option value="released">Confirmed</option>
+                                    <option value="C">Accepted</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID1826640622" style="display: none;">
+                            <td class="label"><label for="ID1826640622">Status</label></td>
+                            <td class="input">
+                                <select id="ID1826640622" name="rc_status_head3" onchange="evaluateX();">
+                                    <option value="">Any</option>
+                                    <option value="open" selected="selected">Open</option>
+                                    <option value="C">Completed Inquiry</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID2070200089" style="display: none;">
+                            <td class="label"><label for="ID2070200089">Status</label></td>
+                            <td class="input">
+                                <select id="ID2070200089" name="rc_status_head_act" onchange="evaluateX();">
+                                    <option value="">???en.???</option>
+                                    <option value="I1825" selected="selected">Pending Checks Of Auctions</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID322847129" style="display: none;">
+                            <td class="label"><label for="ID322847129">Status</label></td>
+                            <td class="input">
+                                <select id="ID322847129" name="rc_status_head5" onchange="evaluateX();">
+                                    <option value="" selected="selected">Any</option>
+                                    <option value="A">Open</option>
+                                    <option value="B">Partially Processed</option>
+                                    <option value="C">Completed</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID1992406241" style="display: block;">
+                            <td class="label"><label for="ID1992406241">Creation Date</label></td>
+                            <td class="input">
+                                <select id="ID1992406241" name="rc_attributesUI" onchange="evaluateX();">
+                                    <option value="today">Today</option>
+                                    <option value="att_by_date">Specific Date</option>
+                                    <option value="att_in_period">In Period</option>
+                                    <option value="since_yesterday" selected="selected">Yesterday</option>
+                                    <option value="last_week">Last Week</option>
+                                    <option value="last_month">Last Month</option>
+                                    <option value="last_year">Last Year</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID659184816" style="display: none;">
+                            <td class="label"><label for="ID659184816">Valid-to Date</label></td>
+                            <td class="input">
+                                <select id="ID659184816" name="rc_attributes" onchange="evaluateX();">
+                                    <option value="today">Today</option>
+                                    <option value="valid_by_date">Valid-On Date</option>
+                                    <option value="valid_in_period">Valid in Period</option>
+                                    <option value="since_tommorow" selected="selected">Tomorrow</option>
+                                    <option value="next_week">The Next Week</option>
+                                    <option value="next_month">The Next Month</option>
+                                    <option value="next_year">The Next Year</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID2042669162" style="display: none;">
+                            <td class="label"><label for="ID2042669162">Date</label></td>
+                            <td class="input">
+                                <input id="ID2042669162" type="text" name="rc_date" class="input-3"
+                                    onblur="dateFormatCheck(this, 'dd/mm/yyyy', 'Enter Date')"
+                                    title="Enter the date in format Enter Date" maxlength="12">
+                                <a href="#" class="icon" onclick="openCalendarWindow('dd/MM/yyyy', 'ID2042669162');">
+                                    <img src="/b2b_merchants/mimes/images/calendar.gif" width="16" height="16" alt="">
+                                </a>
+                            </td>
+                        </tr>
+                        <tr id="TRID1467024792" style="display: none;">
+                            <td class="label"><label for="ID1467024792_LOW">From</label>
+                                <div class="separator"></div><label for="ID1467024792_HIGH">To</label>
+                            </td>
+                            <td class="input">
+                                <input id="ID1467024792_LOW" type="text" name="rc_daterange_low" class="input-3"
+                                    onblur="dateFormatCheck(this, 'dd/mm/yyyy', 'Enter Date')"
+                                    title="Enter the date in format Enter Date" size="11" maxlength="12">
+                                <a href="#" class="icon"
+                                    onclick="openCalendarWindow('dd/MM/yyyy', 'ID1467024792_LOW');">
+                                    <img src="/b2b_merchants/mimes/images/calendar.gif" width="16" height="16" alt="">
+                                </a>
+                                <div class="separator"></div>
+                                <input id="ID1467024792_HIGH" type="text" name="rc_daterange_high" class="input-3"
+                                    onblur="dateFormatCheck(this, 'dd/mm/yyyy', 'Enter Date')"
+                                    title="Enter the date in format Enter Date" size="11" maxlength="12">
+                                <a href="#" class="icon"
+                                    onclick="openCalendarWindow('dd/MM/yyyy', 'ID1467024792_HIGH');">
+                                    <img src="/b2b_merchants/mimes/images/calendar.gif" width="16" height="16" alt="">
+                                </a>
+                            </td>
+                        </tr>
+                        <tr id="TRID1673868986" style="display: none;">
+                            <td class="label"><label for="ID1673868986">Date</label></td>
+                            <td class="input">
+                                <input id="ID1673868986" type="text" name="rc_vdate" class="input-3"
+                                    onblur="dateFormatCheck(this, 'dd/mm/yyyy', 'Enter Date')"
+                                    title="Enter the date in format Enter Date" maxlength="12">
+                                <a href="#" class="icon" onclick="openCalendarWindow('dd/MM/yyyy', 'ID1673868986');">
+                                    <img src="/b2b_merchants/mimes/images/calendar.gif" width="16" height="16" alt="">
+                                </a>
+                            </td>
+                        </tr>
+                        <tr id="TRID680272002" style="display: none;">
+                            <td class="label"><label for="ID680272002_LOW">From</label>
+                                <div class="separator"></div><label for="ID680272002_HIGH">To</label>
+                            </td>
+                            <td class="input">
+                                <input id="ID680272002_LOW" type="text" name="rc_vdaterange_low" class="input-3"
+                                    onblur="dateFormatCheck(this, 'dd/mm/yyyy', 'Enter Date')"
+                                    title="Enter the date in format Enter Date" size="11" maxlength="12">
+                                <a href="#" class="icon" onclick="openCalendarWindow('dd/MM/yyyy', 'ID680272002_LOW');">
+                                    <img src="/b2b_merchants/mimes/images/calendar.gif" width="16" height="16" alt="">
+                                </a>
+                                <div class="separator"></div>
+                                <input id="ID680272002_HIGH" type="text" name="rc_vdaterange_high" class="input-3"
+                                    onblur="dateFormatCheck(this, 'dd/mm/yyyy', 'Enter Date')"
+                                    title="Enter the date in format Enter Date" size="11" maxlength="12">
+                                <a href="#" class="icon"
+                                    onclick="openCalendarWindow('dd/MM/yyyy', 'ID680272002_HIGH');">
+                                    <img src="/b2b_merchants/mimes/images/calendar.gif" width="16" height="16" alt="">
+                                </a>
+                            </td>
+                        </tr>
+                        <tr id="TRID128600986" style="display: block;">
+                            <td class="label"><label for="ID128600986">Activity</label></td>
+                            <td class="input">
+                                <select id="ID128600986" name="rc_attsubcharUI" onchange="evaluateX();">
+                                    <option value="PURCHASE_ORDER">Your Reference Number</option>
+                                    <option value="DOCUMENT_ID" selected="selected">Our Document Number</option>
+                                    <option value="MATERIAL">Material Number</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="TRID1028222820" style="display: none;">
+                            <td class="label">
+                            </td>
+                            <td class="input">
+                                <input id="ID1028222820" type="text" name="rc_po_number_uc" class="input-1" value=""
+                                    size="30" maxlength="40">
+                            </td>
+                        </tr>
+                        <tr id="TRID540028331" style="display: block;">
+                            <td class="label">
+                            </td>
+                            <td class="input">
+                                <input id="ID540028331" type="text" name="rc_object_id" class="input-1" value=""
+                                    size="30" maxlength="40">
+                            </td>
+                        </tr>
+                        <tr id="TRID990266895" style="display: none;">
+                            <td class="label">
+                            </td>
+                            <td class="input">
+                                <input id="ID990266895" type="text" name="rc_product_id" class="input-1" value=""
+                                    size="30" maxlength="40">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input id="ID51067639" tabindex="-1" type="hidden" name="rc_datetoken1" size="255" value="today">
+                <input id="ID1447833520" tabindex="-1" type="hidden" name="rc_datetoken2" size="255"
+                    value="since_yesterday">
+                <input id="ID600766483" tabindex="-1" type="hidden" name="rc_datetoken3" size="255" value="last_week">
+                <input id="ID1761655234" tabindex="-1" type="hidden" name="rc_datetoken4" size="255" value="last_month">
+                <input id="ID782476649" tabindex="-1" type="hidden" name="rc_datetoken5" size="255" value="last_year">
+                <input id="ID1025927937" tabindex="-1" type="hidden" name="rc_vdatetoken1" size="255" value="today">
+                <input id="ID624635396" tabindex="-1" type="hidden" name="rc_vdatetoken2" size="255"
+                    value="since_tommorow">
+                <input id="ID1347034036" tabindex="-1" type="hidden" name="rc_vdatetoken3" size="255" value="next_week">
+                <input id="ID828436378" tabindex="-1" type="hidden" name="rc_vdatetoken4" size="255" value="next_month">
+                <input id="ID1393721545" tabindex="-1" type="hidden" name="rc_vdatetoken5" size="255" value="next_year">
+                <input id="ID417440015" tabindex="-1" type="hidden" name="rc_quotation_type" size="255" value="LEAN">
+            </div>
+            <!-- Change by Leon -->
+            <!-- <div class="buttons"> -->
+            <div class="buttons" style="font-size:10px;">
+                <a class="button" id="gsbuttonstart" href="#" onclick="this.className='button-disabled';sendRequest();"
+                    title="Start Selection - Button">Go</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
