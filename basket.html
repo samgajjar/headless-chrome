@@ -1,0 +1,1240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <title>
+        SAP Internet Sales - Order Form
+    </title>
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/stylesheet_ge.css" />
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/b2b/stylesheet.css" />
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/mimes/catalog/stylesheet.css" />
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/b2b/css/ipc.css" />
+    <link type="text/css" rel="stylesheet" href="/b2b_merchants/ipc/mimes/style/stylesheet.css" />
+    <script type="text/javascript">
+        var urlRewAppPath = "";   // stores application path
+        var urlRewSessionId = ""; // store session id
+        function determineRewriteParameters() {
+            var rewrite = "/b2b_merchants/";
+            if (rewrite.length > 0) {
+                var colpos = rewrite.indexOf(";");
+                if (colpos > -1) {
+                    urlRewAppPath = rewrite.substring(0, colpos);
+                    urlRewSessionId = rewrite.substring(colpos, rewrite.length);
+                }
+                else {
+                    urlRewAppPath = rewrite;
+                }
+            }
+            return true;
+        }
+        function rewriteURL(srcUrl) {
+            var rewUrl;
+            var paramStart = srcUrl.indexOf("?");
+            // are there already any request parameters, so we have to insert the urlRewSessionId before them
+            if (paramStart == -1) {
+                rewUrl = srcUrl + urlRewSessionId;
+            }
+            else {
+                rewUrl = srcUrl.substring(0, paramStart) + urlRewSessionId + srcUrl.substring(paramStart, srcUrl.length);
+            }
+            if (urlRewAppPath.length > 0) {
+                if (rewUrl.charAt(0) == "/") {
+                    rewUrl = urlRewAppPath.substring(0, urlRewAppPath.length - 1) + rewUrl;
+                }
+                else {
+                    rewUrl = urlRewAppPath + rewUrl;
+                }
+            }
+            return rewUrl;
+        }
+        determineRewriteParameters();
+    </script>
+    <script type="text/javascript" src="/b2b_merchants/mimes/jscript/EComBase.js">
+    </script>
+    <script type="text/javascript">
+            // call with the basic parameters dateFormat, dateFieldId
+            function openCalendarWindow(dateFormat, dateFieldId) {
+                dateField = getElement(dateFieldId);
+                return openCalendarWindow3(dateFormat, dateField.value, dateField);
+            }
+        // call with the basic parameters dateFormat, dateFieldId 
+        // and start the calendar month table on the weekDay
+        function openCalendarWindowOnWeekDay(dateFormat, dateFieldId, weekDay) {
+            dateField = getElement(dateFieldId);
+            return openCalendarWindow4(dateFormat, dateField.value, dateField, weekDay);
+        }
+        // call with all the parameters dateFormat, dateValue, dateField, weekDay
+        function openCalendarWindow4(dateFormat, dateValue, dateField, weekDay) {
+            var calendarWindow = window.open('/b2b_merchants/appbase/calendar.jsp' + '?dateFormat=' + dateFormat + '&dateValue=' + dateValue + '&weekDay=' + weekDay,
+                'calendarWindow', 'width=300,height=370,screenX=200,screenY=300,titlebar=yes,resizable=yes');
+            calendarWindow.dateField = dateField;
+            calendarWindow.focus();
+            return calendarWindow;
+        }
+        // call with the most common 3 parameters dateFormat, dateValue, dateField
+        function openCalendarWindow3(dateFormat, dateValue, dateField) {
+            var calendarWindow = window.open('/b2b_merchants/appbase/calendar.jsp' + '?dateFormat=' + dateFormat + '&dateValue=' + dateValue,
+                'calendarWindow', 'width=300,height=370,screenX=200,screenY=300,titlebar=yes,resizable=yes');
+            calendarWindow.dateField = dateField;
+            calendarWindow.focus();
+            return calendarWindow;
+        }
+        // call with the parameters dateFormat, dateField. The dateValue is taken from the dateField
+        function openCalendarWindow2(dateFormat, dateField) {
+            return openCalendarWindow3(dateFormat, dateField.value, dateField)
+        }
+        // call with the dateField, The dateFormat is the default SAP date, The dateValue is taken from the dateField
+        function openCalendarWindow1(dateField) {
+            var calendarWindow = window.open('/b2b_merchants/appbase/calendar.jsp' + '?dateValue=' + dateField.value,
+                'calendarWindow', 'width=300,height=370,screenX=200,screenY=300,titlebar=yes,resizable=yes');
+            calendarWindow.dateField = dateField;
+            calendarWindow.focus();
+            return calendarWindow;
+        }
+        // display the calendar control embedded not as pop-up (needs modification of the calling JSP)
+        function showCal(dateFormat, dateFieldId, calDivId, calFrameName) {
+            dateField = getElement(dateFieldId);
+            var calendarFrame = getElement(calFrameName);
+            // display the calendar div-area
+            toggleCal(calDivId);
+            // set the inputfield object at the calendarFrame
+            var calReady = false;
+            var startTime = new Date();
+            var timeDiff = 0;
+            var stopIt = false;
+            while (!calReady && !stopIt) {
+                try {
+                    calendarFrame.contentWindow.dateField = dateField;
+                    calReady = true;
+                }
+                catch (e) {
+                }
+                // If accessing calendar frame is not successful within 10 seconds we stop in order to avoid an endless loop.
+                var currentTime = new Date();
+                timeDiff = currentTime - startTime;
+                if (timeDiff > 100000) {
+                    stopIt = true;
+                }
+            }
+        }
+        // display or hide the div-area of the embedded calendar control
+        function toggleCal(divId) {
+            getElement(divId).style.display = (getElement(divId).style.display == 'block') ? 'none' : 'block';
+        }
+    //-->
+    </script>
+    <script type="text/javascript">
+        var sessionid = "/b2b_merchants/";
+        function showProductReplacementHelp() {
+            window.open('/b2b_merchants/b2b/productreplacementhelp.jsp',
+                'Help',
+                'scrollbars=yes,height=360,width=370');
+        }
+        function showShipTo(index) {
+            var url = "/b2b_merchants/b2b/showshipto.do?shipToIndex=" + index;
+            var sat = window.open(url, 'sat_details', 'width=450,height=380,menubar=no,locationbar=no,scrolling=auto,resizable=yes');
+            sat.focus();
+            return true;
+        }
+        function showShipToWithTechKey(techKey) {
+            var url = "/b2b_merchants/b2b/showshipto.do?shipToTechKey=" + techKey;
+            var sat = window.open(url, 'sat_details', 'width=450,height=330,menubar=no,locationbar=no,scrolling=auto,resizable=yes');
+            sat.focus();
+            return true;
+        }
+        function showSoldTo(bupaKey) {
+            var url = '/b2b_merchants/b2b/businesspartnershow.do?inWindow=true&amp;readOnly=true&amp;bupaTechkey=' + bupaKey;
+            openWinExtended(url, 450, 310);
+        }
+        function contractInfo(contractKey, contractItemKey, contractId) {
+            var url = "/b2b_merchants/b2b/detailcontractread.do?detailContractKey=" + contractKey + "&detailContractItemKey=" + contractItemKey + "&detailContractId=" + contractId;
+            window.open(url, 'contractdetails', 'height=500, width=400, resizable=yes, scrollbars=yes');
+        }
+        var linecount = 0 + 5;
+        function disableEmptyInputFields() {
+            var headerRqDlvDt = document.forms['order_positions'].elements['headerReqDeliveryDate'].value;
+            for (var i = 1; i <= (linecount); i++) {
+                var productString = "document.forms['order_positions'].elements['product[" + i + "]']";
+                if (eval(productString) == undefined || eval(productString).value == "") {
+                    continue;
+                }
+                var elementString = "document.forms['order_positions'].elements['comment[" + i + "]']";
+                var elementObject = eval(elementString);
+                if (elementObject != null && elementObject.value == "") {
+                    elementToDisable = "comment[" + i + "]";
+                    document.getElementById(elementToDisable).disabled = true;
+                }
+                elementString = "document.forms['order_positions'].elements['reqdeliverydate[" + i + "]']";
+                if (eval(elementString) == undefined || eval(elementString).value == "") {
+                    continue;
+                }
+                if ((eval(elementString).value == "") || (eval(elementString).value == headerRqDlvDt)) {
+                    elementToDisable = "reqdeliverydate[" + i + "]";
+                    document.getElementById(elementToDisable).disabled = true;
+                }
+            }
+        }
+        function send_confirm() {
+            // Multiple Invokation handling (note 905589)
+            if (isBasketEmpty() && miSetStatusUpdateRunning()) { // note 908052
+                //Chnaged by Leon 2009-10-02
+                //alert('???en.b2b.ordr.alr.basket.b2r.empty???');
+                alert("???en.b2b.ordr.alr.basket.b2r.empty???");
+                //End of change
+                return false;
+            }
+            send_confirm_header_only();
+        }
+        function send_confirm_header_only() {
+            // Multiple Invokation handling (note 905589)
+            if (!miSetStatusUpdateRunning()) return false;
+            //Chnaged by Leon 2009-10-02
+            //check = confirm('???en.b2b.ord.conf.basket.b2r.plain???');
+            check = confirm("???en.b2b.ord.conf.basket.b2r.plain???");
+            //End of change
+            if (check) {
+                document.forms["order_positions"].sendpressed.value = "true";
+                disableEmptyInputFields();
+                document.forms["order_positions"].submit();
+                miSetStatusUpdateRunning(true); // note 908052
+            }
+            return check;
+        }
+        function cancel_confirm() {
+            // Multiple Invokation handling (note 905589)
+            if (!miSetStatusUpdateRunning()) return false;
+            //Chnaged by Leon 2009-10-02
+            //check = confirm('Do you really want to cancel the shopping basket?');
+            check = confirm("Do you really want to cancel the shopping basket?");
+            //End of change
+            if (check) {
+                document.forms["order_positions"].target = "form_input";
+                document.forms["order_positions"].cancelpressed.value = "true";
+                document.forms["order_positions"].submit();
+                miSetStatusUpdateRunning(true); // note 908052
+            }
+            return check;
+        }
+        function order_confirm() {
+            // Multiple Invokation handling (note 905589)
+            if (!miSetStatusUpdateRunning()) return false;
+            if (document.forms["order_positions"] != null) {
+                if (isBasketEmpty()) {
+                    //Chnaged by Leon 2009-10-02
+                    //alert('Collective order is empty');	
+                    alert("Collective order is empty");
+                    //End of change
+                    return false;
+                }
+                check = confirm("Do you want to submit the collective order now?");
+                if (check == true) {
+                    document.forms["order_positions"].orderpressed.value = "true";
+                    disableEmptyInputFields();
+                    document.forms["order_positions"].submit();
+                    miSetStatusUpdateRunning(true); // 908052
+                }
+                return check;
+            }
+            return false;
+        }
+        function goToFirstEmptyPos() {
+            i = 1;
+            while (i <= linecount && !false) {
+                if (getElement("product[" + i + "]").value == "") {
+                    getElement("product[" + i + "]").focus();
+                    break;
+                }
+                i = i + 1;
+            }
+            if (i > linecount) {
+                getElement("product[" + linecount + "]").focus();
+            }
+        }
+        // *** START multiple invokation handling (note (note 905589))
+        var miAllObjs = null;
+        var miUpdateStarted = false;
+        // function is called on onload event of HTML page
+        function miRegisterObjects(popup) {
+            // all buttons are modelled as <a href...>
+            miAllObjs = document.getElementsByTagName('a');
+            // *** Start Change By Leon 2012-08-21 Add a popup for new items
+            if (popup == "true") {
+                if (window.showModalDialog) {
+                    window.showModalDialog("zproposedprdouctlist.do?popup=1", "Choose our new items", "resizable:yes;status:no;dialogWidth:300px;dialogHeight:350px;dialogLeft:400px;dialogTop:70px");
+                    window.location.reload(true);
+                } else {
+                    window.open('zproposedprdouctlist.do?popup=1', 'Choose our new items', 'height=265,width=300,left=200,top=50,toolbar=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no ,modal=yes');
+                }
+            }
+            // *** End Change
+        }
+        function miSetStatusUpdateRunning(setLock) {
+            if (miUpdateStarted) {
+                return false;
+            }
+            if (setLock) {  // note 908052
+                miUpdateStarted = true;
+                for (var i = 0; i < miAllObjs.length; i++) {
+                    miAllObjs[i].title = "Request in progress, please be patient";
+                }
+            }
+            return true;
+        }
+     // *** END multiple invokation handling
+  //-->
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/table_highlight.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/reload.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/frames.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/auction/jscript/calendar.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/browsersniff.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/mimes/jscript/EComBase.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/orderTools.js" type="text/javascript">
+    </script>
+    <script src="/b2b_merchants/b2b/jscript/orderToolsRetkey.js" type="text/javascript">
+    </script>
+    <script src='/b2b_merchants/appbase/jscript/ipc_pricinganalysis.jsp' type="text/javascript">
+    </script>
+    <script type="text/javascript">
+            function getVinPopup() {
+                var url = "";
+                var url = rewriteURL("/b2b/showextrefobj.do") + "?level=1&vinvalues=" + getVins();
+                var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+                sat.focus();
+            }
+        function getVins() {
+            var vinsH;
+            var fieldH;
+            var fieldH1;
+            // get the Elements
+            fieldH1 = getElement("vinNum");
+            fieldH = getElement("addVinNum");
+            if ((fieldH1 != null && fieldH1.value != '') && (fieldH != null && fieldH.value == '')) {
+                vinsH = fieldH1.value;
+            } else if (fieldH1 != null && fieldH != null) {
+                vinsH = getCheckedVins(fieldH1.value, fieldH.value);
+            } else {
+                vinsH = "";
+            }
+            return vinsH;
+        }
+        function getCheckedVins(vin, vins) {
+            var i = 0;
+            var firstVIN;
+            var checkedVINs;
+            i = vins.indexOf(';');
+            if (i != -1) {
+                firstVIN = vins.substring(0, i);
+            }
+            if (vin == firstVIN) {
+                checkedVINs = vins;
+            } else {
+                checkedVINs = vin.concat(vins.substring(i));
+            }
+            return checkedVINs;
+        }
+        function getVinPopupItem(itemKey, line) {
+            var url = "";
+            var url = rewriteURL("/b2b/showextrefobj.do") + "?level=0&itemkey=" + itemKey + "&linenum=" + line + "&vinvalues=" + getVinsItem(line);
+            var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function getVinPopupNewItem(line) {
+            var url = "";
+            var url = rewriteURL("/b2b/showextrefobj.do") + "?level=0&linenum=" + line + "&vinvalues=" + getVinsItem(line);
+            var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function getVinsItem(line) {
+            var vinsI;
+            var fieldI;
+            var fieldI1;
+            var fieldname1;
+            var fieldname;
+            fieldname1 = "vinNum_" + line;
+            fieldname = "addVinNum_" + line;
+            // get the Elements
+            fieldI1 = getElement(fieldname1);
+            fieldI = getElement(fieldname);
+            if ((fieldI1 != null && fieldI1.value != '') && (fieldI != null && fieldI.value == '')) {
+                vinsI = fieldI1.value;
+            } else if (fieldI1 != null && fieldI != null) {
+                vinsI = getCheckedVins(fieldI1.value, fieldI.value);
+            } else {
+                vinsI = "";
+            }
+            return vinsI;
+        }
+        function getVinPopupH(level, vins) {
+            var url = "";
+            var url = rewriteURL("/b2b/showextrefobjconfirm.do") + "?level=" + level + "&savedvins=" + vins;
+            var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function getVinPopupOC() {
+            var url = "";
+            var url = rewriteURL("/b2b/showextrefobjchange.do") + "?level=1&vinvalues=" + getVins();
+            var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function getVinPopupItemOC(itemKey, line) {
+            var url = "";
+            var url = rewriteURL("/b2b/showextrefobjchange.do") + "?level=0&itemkey=" + itemKey + "&linenum=" + line + "&vinvalues=" + getVinsItem(line);
+            var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function getVinPopupNewItemOC(line) {
+            var url = "";
+            var url = rewriteURL("/b2b/showextrefobjchange.do") + "?level=0&linenum=" + line + "&vinvalues=" + getVinsItem(line);
+            var sat = window.open(url, 'Fahrgestellnummern', 'width=450,height=450,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            sat.focus();
+        }
+        function checkDuplicateVin(msg) {
+            var vinV;
+            var vinH;
+            var fieldV;
+            var fieldH;
+            var doublet = false;
+            fieldV = getElement("vinNum");
+            fieldH = getElement("addVinNum");
+            if ((fieldV != null && fieldV.value != '') && (fieldH != null && fieldH.value != '')) {
+                vinV = fieldV.value;
+                vinH = fieldH.value;
+                doublet = checkDoubleVin(vinV, vinH);
+                if (doublet == true) {
+                    alert(msg);
+                    var focusString = "document.order_positions.vinNum.focus()";
+                    eval(focusString);
+                    return doublet;
+                }
+            }
+            return doublet;
+        }
+        function checkDoubVinItem(lines, msg) {
+            var vinV;
+            var vinH;
+            var fieldV;
+            var fieldH;
+            var doublet = false;
+            for (var i = 1; i <= lines; i++) {
+                fieldNameV = "vinNum_" + i;
+                fieldNameH = "addVinNum_" + i;
+                // get the Elements
+                fieldV = getElement(fieldNameV);
+                fieldH = getElement(fieldNameH);
+                if ((fieldV != null && fieldV.value != '') && (fieldH != null && fieldH.value != '')) {
+                    vinV = fieldV.value;
+                    vinH = fieldH.value;
+                    doublet = checkDoubleVin(vinV, vinH);
+                    if (doublet == true) {
+                        alert(msg);
+                        var focusString = "document.order_positions.vinNum_" + i + ".focus()";
+                        eval(focusString);
+                        return doublet;
+                    }
+                }
+            }
+            return doublet;
+        }
+        function checkDoubVinItemPos(line, msg) {
+            var vinV;
+            var vinH;
+            var fieldV;
+            var fieldH;
+            var doublet = false;
+            fieldNameV = "vinNum_" + line;
+            fieldNameH = "addVinNum_" + line;
+            // get the Elements
+            fieldV = getElement(fieldNameV);
+            fieldH = getElement(fieldNameH);
+            if ((fieldV != null && fieldV.value != '') && (fieldH != null && fieldH.value != '')) {
+                vinV = fieldV.value;
+                vinH = fieldH.value;
+                doublet = checkDoubleVin(vinV, vinH);
+                if (doublet == true) {
+                    alert(msg);
+                    var focusString = "document.order_positions.vinNum_" + line + ".focus()";
+                    eval(focusString);
+                    return doublet;
+                }
+            }
+            return doublet;
+        }
+        function checkDoubleVin(vin, vins) {
+            var doub = false;
+            var ende;
+            var hit2;
+            var hit = vins.indexOf(vin);
+            if (hit > 0) {
+                var look = vins.substring(hit - 1);
+                hit2 = look.indexOf(';');
+                if (0 == hit2) {
+                    var end = look.substring(1);
+                    var hit3 = end.indexOf(';');
+                    if (vin.length == hit3) {
+                        doub = true;
+                    }
+                }
+            }
+            return doub;
+        }
+        function check_submit_refresh(lines, msg) {
+            var testH = false;
+            var testI = false;
+            testH = checkDuplicateVin(msg);
+            testI = checkDoubVinItem(lines, msg);
+            if (testH == false && testI == false) {
+                submit_refresh();
+            }
+        }
+        function checkVinToggle(line, msg) {
+            var doubles = checkDoubVinItemPos(line, msg);
+            if (doubles == false) {
+                toggle("rowdetail_" + line);
+            }
+        }
+        function check_send_confirm(lines, msg) {
+            var testH = false;
+            var testI = false;
+            testH = checkDuplicateVin(msg);
+            testI = checkDoubVinItem(lines, msg);
+            if (testH == false && testI == false) {
+                send_confirm();
+            }
+        }
+        function check_send_confirm_header_only(msg) {
+            var testH = false;
+            testH = checkDuplicateVin(msg);
+            if (testH == false) {
+                send_confirm_header_only();
+            }
+        }
+//-->
+    </script>
+    <script type="text/javascript">
+        contentType = "UTF-8";
+        function searchSoldTo() {
+            parent.parent.organizer_nav.location.href = "/b2b_merchants/b2b/organizer-nav-customer-search.jsp";
+            parent.parent.organizer_content.location.href = "/b2b_merchants/b2b/preparebupasearch.do";
+        }
+        function setPO() {
+            var po = document.order_positions.poNumber.value;
+            if (po == "") {
+                document.order_positions.poNumber.value = 'C100011_02';
+            }
+        }
+        //Changed by Leon 2009-08-07
+        //Dynamically control page height to make bottom buttons visible
+        function setScreen() {
+            var doc = document.getElementById('document');
+            if (screen.height <= 600) {
+                doc.style.height = screen.height * 0.5;
+            }
+        }
+        //End of change
+        //Added by Leon 2010-09-22 Check if max chars reached in shipinfo textarea
+        function checkChars() {
+            if (document.getElementById("shipinfo").value.length > 140) {
+                alert("Maximum 140 characters allowed for your Receiving Dept info !");
+                return false;
+            }
+            return true;
+        }
+        function limitTextarea(fld, cnt) {
+            var num = 240;//allowed max chars
+            if (fld.value.length > num) {
+                fld.value = fld.value.substring(0, num);
+            } else {
+                cnt.value = num - fld.value.length;
+            }
+        }
+        function countTxt() {
+            if (document.getElementById("shipInfo").value.length > 0) {
+                var txtVal = document.getElementById("shipInfo").value;
+                txtVal = txtVal.replace(/^\s+|\s+$/g, '');
+                var txtLen = txtVal.length;
+                document.order_positions.countdown.value = 240 - txtLen;
+            }
+        }
+	 //End of change
+    //-->
+            function getHelpValuesPopupCustomer(formName, index) {
+                var param = "";
+                var params = "";
+                var formObject = document.forms[formName];
+                var suffix = "";
+                if (index != "") {
+                    suffix = "[" + index + "]";
+                }
+                param = eval("formObject.elements['customerNumber" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&customerNumber" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_city" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_city" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_singlefield1" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_singlefield1" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_pcode" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_pcode" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['crc_cust_singlefield2" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&crc_cust_singlefield2" + suffix + "=" + param.value;
+                }
+                param = eval("formObject.elements['rc_cust_lastname" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&rc_cust_lastname" + suffix + "=" + param.value;
+                }
+                url = "/b2b_merchants/base/helpvalues.do?helpValuesSearch=Customer"
+                    + "&formname=" + formName + params + "&parameterIndex=" + index;
+                var sat = window.open(url, 'sat_details', 'width=600,height=400,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+                return false;
+            }
+	//-->
+    </script>
+    <script type="text/javascript">
+            function getHelpValuesPopupIncoTerms1(formName, index) {
+                var param = "";
+                var params = "";
+                var formObject = document.forms[formName];
+                var suffix = "";
+                if (index != "") {
+                    suffix = "[" + index + "]";
+                }
+                param = eval("formObject.elements['incoterms1" + suffix + "']");
+                if (param != null && param.value != null) {
+                    params = params + "&incoterms1" + suffix + "=" + param.value;
+                }
+                url = "/b2b_merchants/base/helpvalues.do?helpValuesSearch=IncoTerms1"
+                    + "&formname=" + formName + params + "&parameterIndex=" + index;
+                var sat = window.open(url, 'sat_details', 'width=600,height=400,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+                return false;
+            }
+        function getHelpValuesPopupCustomer(formName, index) {
+            var param = "";
+            var params = "";
+            var formObject = document.forms[formName];
+            var suffix = "";
+            if (index != "") {
+                suffix = "[" + index + "]";
+            }
+            param = eval("formObject.elements['customerNumber" + suffix + "']");
+            if (param != null && param.value != null) {
+                params = params + "&customerNumber" + suffix + "=" + param.value;
+            }
+            param = eval("formObject.elements['rc_cust_city" + suffix + "']");
+            if (param != null && param.value != null) {
+                params = params + "&rc_cust_city" + suffix + "=" + param.value;
+            }
+            param = eval("formObject.elements['rc_cust_singlefield1" + suffix + "']");
+            if (param != null && param.value != null) {
+                params = params + "&rc_cust_singlefield1" + suffix + "=" + param.value;
+            }
+            param = eval("formObject.elements['rc_cust_pcode" + suffix + "']");
+            if (param != null && param.value != null) {
+                params = params + "&rc_cust_pcode" + suffix + "=" + param.value;
+            }
+            param = eval("formObject.elements['crc_cust_singlefield2" + suffix + "']");
+            if (param != null && param.value != null) {
+                params = params + "&crc_cust_singlefield2" + suffix + "=" + param.value;
+            }
+            param = eval("formObject.elements['rc_cust_lastname" + suffix + "']");
+            if (param != null && param.value != null) {
+                params = params + "&rc_cust_lastname" + suffix + "=" + param.value;
+            }
+            url = "/b2b_merchants/base/helpvalues.do?helpValuesSearch=Customer"
+                + "&formname=" + formName + params + "&parameterIndex=" + index;
+            var sat = window.open(url, 'sat_details', 'width=600,height=400,menubar=no,locationbar=no,scrollbars=yes,resizable=yes');
+            return false;
+        }
+	//-->
+    </script>
+</head>
+<!--   <body class="order" onfocus="selReqDelSelectWdwOpen();" onload="miRegisterObjects('true');" onkeypress="checkReturnKeyPressed(event);"> -->
+<body class="order" onfocus="selReqDelSelectWdwOpen();" onload="miRegisterObjects('true');"
+    onkeypress="checkReturnKeyPressed(event);">
+    <div class="module-name"></div>
+    <a id="access-header" href="#access-items" title="Document header. Click on this link to get to the items."
+        accesskey="h"></a>
+    <h1><span>Shopping Basket:&nbsp;In Process</span></h1>
+    <div id="document">
+        <form action="/b2b_merchants/b2b/maintainbasket.do" id="order_positions" name="order_positions" method="post">
+            <div>
+                <input type="hidden" name="requestserial" value="0" />
+                <input type="hidden" name="businessPartnerRole[1]" value="SOLDTO" />
+                <input type="hidden" name="businessPartnerTechKey[1]" value="0000100011" />
+                <input type="hidden" name="businessPartnerId[1]" value="0000100011" />
+                <input type="hidden" name="businessPartnerRole[2]" value="CONTACT" />
+                <input type="hidden" name="businessPartnerTechKey[2]" value="0000100011" />
+                <input type="hidden" name="businessPartnerId[2]" value="0000100011" />
+            </div>
+            <div class="document-header">
+                <div class="header-basic">
+                    <table class="layout">
+                        <tr>
+                            <td class="col1">
+                                <table class="header-general"
+                                    summary="Table for entering header data; 2 columns, 6 rows">
+                                    <tr>
+                                        <td class="identifier">
+                                            <label for="poNumber">Your Reference:</label>
+                                        </td>
+                                        <td class="value">
+                                            <input type="text" class="textinput-large" maxlength="20" name="poNumber"
+                                                id="poNumber" value="" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="identifier">
+                                        </td>
+                                        <td class="value">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="col2">
+                                <table class="price-info"
+                                    summary="Table for displaying aggregated prices on header level; 2 columns, 5 rows.">
+                                    <tr>
+                                        <td class="identifier" scope="row">Total Net Price:</td>
+                                        <td class="value">0.00&nbsp;CAD
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                    </tr>
+                                    <tr>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="header-itemdefault">
+                    <h1 class="group"><span>Default Delivery Settings For Items</span></h1>
+                    <div class="group">
+                        <table class="data"
+                            summary="Table for entering default values for items on header level; 2 columns, 4 rows">
+                            <tr>
+                                <td class="identifier"><label for="headerShipTo">Deliver To:</label></td>
+                                <td class="value">
+                                    <select class="select-xlarge" name="headerShipTo" id="headerShipTo">
+                                        <option selected="selected" value="0000100011">FIRST LAST USA</option>
+                                    </select>&nbsp;
+                                    <a href="#" class="icon"
+                                        onclick="showShipTo(document.order_positions.headerShipTo.selectedIndex);"><img
+                                            src="/b2b_merchants/b2b/mimes/images/icon_shipad_detail_green.gif"
+                                            alt="View ship-to party address" /></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="identifier">
+                                    <label for="headerReqDeliveryDate">Requested Delivery Date:</label>
+                                </td>
+                                <td class="value">
+                                    <input name="headerReqDeliveryDate" id="headerReqDeliveryDate"
+                                        class="textinput-middle" type="text" value="19/05/2021"
+                                        onblur="updItemReqDeliveryDate(updTypeAll)" />
+                                    <a class="icon" href="#"
+                                        onclick="openCalendarWindow('dd/MM/yyyy', 'headerReqDeliveryDate');">
+                                        <img class="img-1" src="/b2b_merchants/b2b/mimes/images/calendar.gif"
+                                            alt="Calendar" />
+                                    </a>
+                                </td>
+                            </tr>
+                            <!-- Changed by Leon 2010-09-22 Add Delivery/Shipping info -->
+                            <tr>
+                                <td class="identifier" align="right" nowrap="nowrap">Information for your Receiving
+                                    Dept:&nbsp;</td>
+                                <td class="value" align="left" nowrap="nowrap">
+                                    <textarea
+                                        style="white-space: pre-wrap;width:600px;overflow:auto;word-wrap:break-word;"
+                                        id="shipinfo" name="shipinfo" rows="3"
+                                        onKeyDown="limitTextarea(this.form.shipinfo,this.form.countdown);"
+                                        onKeyUp="limitTextarea(this.form.shipinfo,this.form.countdown);">
+</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Allowed characters left <input style="border:none;" type="text" disabled="disabled"
+                                        size="3" name="countdown" value="240" />
+                                </td>
+                            </tr>
+                            <!-- End of change -->
+                            <!-- Remove PST stuffs since HST is applied	(2010-08-20 Changed By Leon)
+				
+                   
+                     <tr>
+                        <td class="identifier" align="right" nowrap="nowrap">Add PST to this Order:&nbsp;</td>
+                        <td class="value" align="left" nowrap="nowrap">
+                                                   
+                          <input name="altTaxClass" value="1" type="checkbox" >
+                        </td>
+                     </tr>  
+                   
+(2010-08-20 Changed By Leon) -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="document-items">
+                <a id="access-items" href="#access-buttons"
+                    title="Items of the document. Click on this link to get to the buttons." accesskey="i"></a>
+                <table class="itemlist" summary="This table contains data on the items of the document.">
+                    <tr>
+                        <th class="opener">&nbsp;
+                        </th>
+                        <th class="item" scope="col">Item</th>
+                        <th class="product" scope="col">Product</th>
+                        <th class="qty" scope="col">Quantity</th>
+                        <th class="unit" scope="col">Unit</th>
+                        <th class="desc" scope="col">Description</th>
+                        <th class="price" scope="col">Total Price<br /><em>Unit Price</em></th>
+                        <th class="delete" scope="col"><img src="/b2b_merchants/b2b/mimes/images/icon_delete_green.gif"
+                                alt="Check item for deletion, then choose update" /></th>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="separator"></td>
+                    </tr>
+                    <tr id="row_1" class="odd">
+                        <td class="opener">
+                            &nbsp;
+                        </td>
+                        <td class="item">&nbsp;</td>
+                        <td class="product">
+                            <input type="text" class="textinput-middle" name="product[1]" id="product[1]" value="" />
+                        </td>
+                        <td class="qty">
+                            <!-- Change by Leon 2009-10-09 Increase qty field width -->
+                            <!-- <input type="text" class="textinput-small" name="quantity[1]" maxlength="8" value=""/> -->
+                            <input style="width:60px;" type="text" class="textinput-small" name="quantity[1]"
+                                maxlength="8" value="" />
+                            <!-- End of change -->
+                        </td>
+                        <td class="unit">
+                            <!--<input type="text" class="textinput-small" name="units[1]" value=""/>-->
+                        </td>
+                        <td class="desc">&nbsp;</td>
+                        <td class="price">&nbsp;</td>
+                        <td class="delete">&nbsp;</td>
+                    </tr>
+                    <tr id="rowdetail_1" class="odd-detail" style="display:none;">
+                        <td class="select">&nbsp;</td>
+                        <td class="detail" colspan="10">
+                            <table class="item-detail">
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="customer[1]">Deliver To:</label>
+                                    </td>
+                                    <td class="value">
+                                        <select id="customer[1]" name="customer[1]">
+                                            <option selected="selected" value="0000100011">MIKE
+                                                MORTE...ATT.CREDIT...MISSISSAUG</option>
+                                        </select>&nbsp;
+                                        <a href="#" class="icon"
+                                            onclick="showShipTo(document.order_positions['customer[1]'].selectedIndex);">
+                                            <img class="img-1"
+                                                src="/b2b_merchants/b2b/mimes/images/icon_shipad_detail_green.gif"
+                                                alt="View ship-to party address" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="reqdeliverydate[1]">Requested Delivery Date:</label>
+                                    </td>
+                                    <td class="value">
+                                        <input type="text" class="textinput-middle" id="reqdeliverydate[1]"
+                                            name="reqdeliverydate[1]" value="19/05/2021" />
+                                        <a class="icon" href="#"
+                                            onclick="openCalendarWindow('dd/MM/yyyy', 'reqdeliverydate[1]');">
+                                            <img class="img-1" src="/b2b_merchants/b2b/mimes/images/calendar.gif"
+                                                alt="Calendar" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr class="message-data">
+                                    <td class="identifier">
+                                        <label for="comment[1]">Your Message To Us:</label>
+                                    </td>
+                                    <td class="value">
+                                        <textarea id="comment[1]" name="comment[1]" rows="2" cols="65"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="separator"></td>
+                    </tr>
+                    <tr id="row_2" class="even">
+                        <td class="opener">
+                            &nbsp;
+                        </td>
+                        <td class="item">&nbsp;</td>
+                        <td class="product">
+                            <input type="text" class="textinput-middle" name="product[2]" id="product[2]" value="" />
+                        </td>
+                        <td class="qty">
+                            <!-- Change by Leon 2009-10-09 Increase qty field width -->
+                            <!-- <input type="text" class="textinput-small" name="quantity[2]" maxlength="8" value=""/> -->
+                            <input style="width:60px;" type="text" class="textinput-small" name="quantity[2]"
+                                maxlength="8" value="" />
+                            <!-- End of change -->
+                        </td>
+                        <td class="unit">
+                            <!--<input type="text" class="textinput-small" name="units[2]" value=""/>-->
+                        </td>
+                        <td class="desc">&nbsp;</td>
+                        <td class="price">&nbsp;</td>
+                        <td class="delete">&nbsp;</td>
+                    </tr>
+                    <tr id="rowdetail_2" class="even-detail" style="display:none;">
+                        <td class="select">&nbsp;</td>
+                        <td class="detail" colspan="10">
+                            <table class="item-detail">
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="customer[2]">Deliver To:</label>
+                                    </td>
+                                    <td class="value">
+                                        <select id="customer[2]" name="customer[2]">
+                                            <option selected="selected" value="0000100011">MIKE
+                                                MORTE...ATT.CREDIT...MISSISSAUG</option>
+                                        </select>&nbsp;
+                                        <a href="#" class="icon"
+                                            onclick="showShipTo(document.order_positions['customer[2]'].selectedIndex);">
+                                            <img class="img-1"
+                                                src="/b2b_merchants/b2b/mimes/images/icon_shipad_detail_green.gif"
+                                                alt="View ship-to party address" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="reqdeliverydate[2]">Requested Delivery Date:</label>
+                                    </td>
+                                    <td class="value">
+                                        <input type="text" class="textinput-middle" id="reqdeliverydate[2]"
+                                            name="reqdeliverydate[2]" value="19/05/2021" />
+                                        <a class="icon" href="#"
+                                            onclick="openCalendarWindow('dd/MM/yyyy', 'reqdeliverydate[2]');">
+                                            <img class="img-1" src="/b2b_merchants/b2b/mimes/images/calendar.gif"
+                                                alt="Calendar" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr class="message-data">
+                                    <td class="identifier">
+                                        <label for="comment[2]">Your Message To Us:</label>
+                                    </td>
+                                    <td class="value">
+                                        <textarea id="comment[2]" name="comment[2]" rows="2" cols="65"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="separator"></td>
+                    </tr>
+                    <tr id="row_3" class="odd">
+                        <td class="opener">
+                            &nbsp;
+                        </td>
+                        <td class="item">&nbsp;</td>
+                        <td class="product">
+                            <input type="text" class="textinput-middle" name="product[3]" id="product[3]" value="" />
+                        </td>
+                        <td class="qty">
+                            <!-- Change by Leon 2009-10-09 Increase qty field width -->
+                            <!-- <input type="text" class="textinput-small" name="quantity[3]" maxlength="8" value=""/> -->
+                            <input style="width:60px;" type="text" class="textinput-small" name="quantity[3]"
+                                maxlength="8" value="" />
+                            <!-- End of change -->
+                        </td>
+                        <td class="unit">
+                            <!--<input type="text" class="textinput-small" name="units[3]" value=""/>-->
+                        </td>
+                        <td class="desc">&nbsp;</td>
+                        <td class="price">&nbsp;</td>
+                        <td class="delete">&nbsp;</td>
+                    </tr>
+                    <tr id="rowdetail_3" class="odd-detail" style="display:none;">
+                        <td class="select">&nbsp;</td>
+                        <td class="detail" colspan="10">
+                            <table class="item-detail">
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="customer[3]">Deliver To:</label>
+                                    </td>
+                                    <td class="value">
+                                        <select id="customer[3]" name="customer[3]">
+                                            <option selected="selected" value="0000100011">MIKE
+                                                MORTE...ATT.CREDIT...MISSISSAUG</option>
+                                        </select>&nbsp;
+                                        <a href="#" class="icon"
+                                            onclick="showShipTo(document.order_positions['customer[3]'].selectedIndex);">
+                                            <img class="img-1"
+                                                src="/b2b_merchants/b2b/mimes/images/icon_shipad_detail_green.gif"
+                                                alt="View ship-to party address" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="reqdeliverydate[3]">Requested Delivery Date:</label>
+                                    </td>
+                                    <td class="value">
+                                        <input type="text" class="textinput-middle" id="reqdeliverydate[3]"
+                                            name="reqdeliverydate[3]" value="19/05/2021" />
+                                        <a class="icon" href="#"
+                                            onclick="openCalendarWindow('dd/MM/yyyy', 'reqdeliverydate[3]');">
+                                            <img class="img-1" src="/b2b_merchants/b2b/mimes/images/calendar.gif"
+                                                alt="Calendar" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr class="message-data">
+                                    <td class="identifier">
+                                        <label for="comment[3]">Your Message To Us:</label>
+                                    </td>
+                                    <td class="value">
+                                        <textarea id="comment[3]" name="comment[3]" rows="2" cols="65"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="separator"></td>
+                    </tr>
+                    <tr id="row_4" class="even">
+                        <td class="opener">
+                            &nbsp;
+                        </td>
+                        <td class="item">&nbsp;</td>
+                        <td class="product">
+                            <input type="text" class="textinput-middle" name="product[4]" id="product[4]" value="" />
+                        </td>
+                        <td class="qty">
+                            <!-- Change by Leon 2009-10-09 Increase qty field width -->
+                            <!-- <input type="text" class="textinput-small" name="quantity[4]" maxlength="8" value=""/> -->
+                            <input style="width:60px;" type="text" class="textinput-small" name="quantity[4]"
+                                maxlength="8" value="" />
+                            <!-- End of change -->
+                        </td>
+                        <td class="unit">
+                            <!--<input type="text" class="textinput-small" name="units[4]" value=""/>-->
+                        </td>
+                        <td class="desc">&nbsp;</td>
+                        <td class="price">&nbsp;</td>
+                        <td class="delete">&nbsp;</td>
+                    </tr>
+                    <tr id="rowdetail_4" class="even-detail" style="display:none;">
+                        <td class="select">&nbsp;</td>
+                        <td class="detail" colspan="10">
+                            <table class="item-detail">
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="customer[4]">Deliver To:</label>
+                                    </td>
+                                    <td class="value">
+                                        <select id="customer[4]" name="customer[4]">
+                                            <option selected="selected" value="0000100011">MIKE
+                                                MORTE...ATT.CREDIT...MISSISSAUG</option>
+                                        </select>&nbsp;
+                                        <a href="#" class="icon"
+                                            onclick="showShipTo(document.order_positions['customer[4]'].selectedIndex);">
+                                            <img class="img-1"
+                                                src="/b2b_merchants/b2b/mimes/images/icon_shipad_detail_green.gif"
+                                                alt="View ship-to party address" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="reqdeliverydate[4]">Requested Delivery Date:</label>
+                                    </td>
+                                    <td class="value">
+                                        <input type="text" class="textinput-middle" id="reqdeliverydate[4]"
+                                            name="reqdeliverydate[4]" value="19/05/2021" />
+                                        <a class="icon" href="#"
+                                            onclick="openCalendarWindow('dd/MM/yyyy', 'reqdeliverydate[4]');">
+                                            <img class="img-1" src="/b2b_merchants/b2b/mimes/images/calendar.gif"
+                                                alt="Calendar" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr class="message-data">
+                                    <td class="identifier">
+                                        <label for="comment[4]">Your Message To Us:</label>
+                                    </td>
+                                    <td class="value">
+                                        <textarea id="comment[4]" name="comment[4]" rows="2" cols="65"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="separator"></td>
+                    </tr>
+                    <tr id="row_5" class="odd">
+                        <td class="opener">
+                            &nbsp;
+                        </td>
+                        <td class="item">&nbsp;</td>
+                        <td class="product">
+                            <input type="text" class="textinput-middle" name="product[5]" id="product[5]" value="" />
+                        </td>
+                        <td class="qty">
+                            <!-- Change by Leon 2009-10-09 Increase qty field width -->
+                            <!-- <input type="text" class="textinput-small" name="quantity[5]" maxlength="8" value=""/> -->
+                            <input style="width:60px;" type="text" class="textinput-small" name="quantity[5]"
+                                maxlength="8" value="" />
+                            <!-- End of change -->
+                        </td>
+                        <td class="unit">
+                            <!--<input type="text" class="textinput-small" name="units[5]" value=""/>-->
+                        </td>
+                        <td class="desc">&nbsp;</td>
+                        <td class="price">&nbsp;</td>
+                        <td class="delete">&nbsp;</td>
+                    </tr>
+                    <tr id="rowdetail_5" class="odd-detail" style="display:none;">
+                        <td class="select">&nbsp;</td>
+                        <td class="detail" colspan="10">
+                            <table class="item-detail">
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="customer[5]">Deliver To:</label>
+                                    </td>
+                                    <td class="value">
+                                        <select id="customer[5]" name="customer[5]">
+                                            <option selected="selected" value="0000100011">MIKE
+                                                MORTE...ATT.CREDIT...MISSISSAUG</option>
+                                        </select>&nbsp;
+                                        <a href="#" class="icon"
+                                            onclick="showShipTo(document.order_positions['customer[5]'].selectedIndex);">
+                                            <img class="img-1"
+                                                src="/b2b_merchants/b2b/mimes/images/icon_shipad_detail_green.gif"
+                                                alt="View ship-to party address" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="identifier">
+                                        <label for="reqdeliverydate[5]">Requested Delivery Date:</label>
+                                    </td>
+                                    <td class="value">
+                                        <input type="text" class="textinput-middle" id="reqdeliverydate[5]"
+                                            name="reqdeliverydate[5]" value="19/05/2021" />
+                                        <a class="icon" href="#"
+                                            onclick="openCalendarWindow('dd/MM/yyyy', 'reqdeliverydate[5]');">
+                                            <img class="img-1" src="/b2b_merchants/b2b/mimes/images/calendar.gif"
+                                                alt="Calendar" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr class="message-data">
+                                    <td class="identifier">
+                                        <label for="comment[5]">Your Message To Us:</label>
+                                    </td>
+                                    <td class="value">
+                                        <textarea id="comment[5]" name="comment[5]" rows="2" cols="65"></textarea>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="sendpressed" value="" />
+                <input type="hidden" name="cancelpressed" value="" />
+                <input type="hidden" name="showproduct" value="" />
+                <input type="hidden" name="actualpos" value="1" />
+                <input type="hidden" name="deletekey" value="" />
+                <input type="hidden" name="refresh" value="" />
+                <input type="hidden" name="newpos" value="" />
+                <input type="hidden" name="newshipto" value="" />
+                <input type="hidden" name="processsoldto" value="" />
+                <input type="hidden" name="simulatepressed" value="" />
+                <input type="hidden" name="doctype" value="basket.b2r" />
+                <input type="hidden" name="processtype" value="" />
+                <input type="hidden" name="configitemid" value="" />
+                <input type="hidden" name="configtype" value="" />
+                <input type="hidden" name="multipleshipto" value="" />
+                <input type="hidden" name="multiplereqdlvdate" value="" />
+                <input type="hidden" name="cuaproductkey" value="" />
+                <input type="hidden" name="cuareplaceditem" value="" />
+                <input type="hidden" name="replaceditem" value="" />
+                <input type="hidden" name="replacewithproduct" value="" />
+                <input type="hidden" name="replacewithunit" value="" />
+                <input type="hidden" name="replacewithqunatity" value="" />
+                </isacore:ifShopProperty>
+        </form>
+    </div>
+    </div>
+    <!-- Change by Leon 2009-08-06 Set up the height of the items section based on screen resolution height -->
+    <script>
+        setScreen();
+    </script>
+    <!-- End of change -->
+    <div id="buttons">
+        <a id="access-buttons" href="#access-header" accesskey="n"></a>
+        <ul class="buttons-1">
+            <li>
+                <select id="newposcount" size="1">
+                    <option selected="selected" value="5">5 New Items</option>
+                    <option value="10">10 New Items</option>
+                    <option value="15">15 New Items</option>
+                    <option value="20">20 New Items</option>
+                    <option value="25">25 New Items</option>
+                    <option value="30">30 New Items</option>
+                    <option value="40">40 New Items</option>
+                    <option value="50">50 New Items</option>
+                </select>
+                <img class="icon" src="/b2b_merchants/b2b/mimes/images/hint.gif"
+                    alt="Specifies the number of new items to be created with the next update" />
+            </li>
+            <li><a href="#" onclick="submit_refresh();">Update</a></li>
+        </ul>
+        <!-- Changed by Leon 2009-08-06 Set buttons style based on screen resolution width-->
+        <!-- <ul class="buttons-3"> -->
+        <script>
+            if (screen.width <= 800) {
+                document.write("<ul class='buttons-1'>");
+            } else {
+                document.write("<ul class='buttons-3'>");
+            }
+        </script>
+        <!-- Transport test post shweb import -->
+        <!-- End of change -->
+        <li><a href="#" onclick="cancel_confirm();">Cancel</a></li>
+        <li>
+        <li><a href="#" onfocus="setPO();" onclick="submit_simulate('order','TA');">Next Step</a></li>
+        <li><a href="#" onclick="submit_simulate('ordertemplate');">Save as a Shopping List</a></li>
+        </li>
+        </ul>
+    </div>
+    <div id="_isa_Calendar_Control" class="calendarcontrol"
+        style="display:none;z-index:99999;width:250;height:200;position:absolute;">
+    </div>
+    <script language="Javascript">
+        headerReqDelDateOld = '19/05/2021';
+        //Added by Leon,count text number and see how many chars left
+        countTxt();
+    </script>
+</body>
+</html>

@@ -20,6 +20,7 @@
   }
   function create_order(processtype, dealerIdName,popup) {
     alert("Hello");
+    window.location.replace('basket.html');
     // var rewURL = rewriteURL("/b2b/createbasket.do")+"?processtype="+processtype+"&soldToId="+getSoldTo(dealerIdName)+"&popup="+popup;
     // displayBusy(); 
     // parent.form_input.location.href=rewURL;
